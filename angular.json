@@ -25,7 +25,10 @@
             "aot": true,
             "assets": [
               "projects/public/src/favicon.ico",
-              "projects/public/src/assets"
+              "projects/public/src/assets",
+              "projects/public/src/manifest.webmanifest",
+              "projects/public/src/sw-master.js",
+              "projects/public/src/sw-sync.js"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
@@ -37,8 +40,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "projects/public/src/environments/environment.ts",
-                  "with": "projects/public/src/environments/environment.prod.ts"
+                  "replace": "projects/tools/src/environments/environment.ts",
+                  "with": "projects/tools/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -59,7 +62,9 @@
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
                 }
-              ]
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "projects/public/ngsw-config.json"
             }
           }
         },
@@ -89,7 +94,10 @@
             "karmaConfig": "projects/public/karma.conf.js",
             "assets": [
               "projects/public/src/favicon.ico",
-              "projects/public/src/assets"
+              "projects/public/src/assets",
+              "projects/public/src/manifest.webmanifest",
+              "projects/public/src/sw-master.js",
+              "projects/public/src/sw-sync.js"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",

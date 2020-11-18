@@ -3,8 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve --host 192.168.1.47 --disable-host-check",
+    "start-sw": "ng serve --configuration production --disable-host-check --proxy-config proxy.conf.json --verbose",
+    "start-sw-a-tester": "ng serve --configuration productionp --optimization=false --progress=true --disable-host-check --proxy-config proxy.conf.json --sourceMap=true --live-reload --watch",
+    "build": "ng build --configuration production",
+    "serve:public": "http-server -p 8080 -c-1 dist/public",
+    "build-and-serve:public": "npm run build && npm run serve:public",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -21,7 +25,12 @@
     "@angular/platform-browser": "~11.0.0",
     "@angular/platform-browser-dynamic": "~11.0.0",
     "@angular/router": "~11.0.0",
+    "@angular/service-worker": "~11.0.0",
+    "jwt-decode": "^3.1.2",
+    "ngx-swiper-wrapper": "^10.0.0",
+    "ngx-webstorage": "^6.0.0",
     "rxjs": "~6.6.0",
+    "swiper": "^6.3.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
   },

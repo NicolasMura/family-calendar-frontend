@@ -1,0 +1,7 @@
+<swiper class="swiper-container" [config]="config" (indexChange)="onIndexChange($event)">
+  <div *ngFor="let content of fillerContent" class="swiper-slide">
+    <div>
+      {{ content }}
+    </div>
+  </div>
+</swiper>
