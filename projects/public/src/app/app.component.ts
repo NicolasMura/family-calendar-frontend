@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
-import { AuthService } from 'projects/tools/src/lib/services/auth.service';
-import { LoginResponse } from 'projects/tools/src/lib/models/login-response.model';
+import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 // import { buildInfo } from 'projects/public/src/build';
 // import { fadeInOutAnimation } from 'projects/lib-mycloud/src/lib/shared/animations/animations';
 
@@ -36,8 +35,8 @@ export class AppComponent {
 
   constructor(
     private swUpdate: SwUpdate,
-    private snackBar: MatSnackBar, // récupérer la version MyCloud
-    private authService: AuthService
+    private snackBar: MatSnackBar,
+    private notificationService: NotificationService
   ) {
     // this.buildInfo = buildInfo;
 
@@ -63,7 +62,7 @@ export class AppComponent {
       console.log('current version is', event.current);
       console.log('available version is', event.available);
 
-      this.snackBar.open('New version available. Load New Version?', 'OK', {
+      this.notificationService.sendNotification('New version available. Load New Version?', 'OK', {
         duration: 0,
       })
         .onAction().subscribe(() => {
@@ -95,18 +94,10 @@ export class AppComponent {
       });
     }
     /* iOS specific */
-
-    this.login();
   }
 
   public onIndexChange(index: number): void {
     console.log('Swiper index: ', index);
-  }
-
-  public login(): void {
-    this.authService.login('nicolas.mura@gmail.com', 'test').subscribe((loginResponse: LoginResponse) => {
-      console.log(loginResponse);
-    });
   }
 }
 

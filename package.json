@@ -9,6 +9,8 @@
     "build": "ng build --configuration production",
     "serve:public": "http-server -p 8080 -c-1 dist/public",
     "build-and-serve:public": "npm run build && npm run serve:public",
+    "deploy:test": "ng build --base-href ./ && ./deploy.sh",
+    "deploy:prod": "ng build --configuration production --base-href ./ && ./deploy.sh",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

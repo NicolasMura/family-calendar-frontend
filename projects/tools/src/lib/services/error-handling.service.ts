@@ -24,22 +24,16 @@ export class ErrorHandlingService {
     let errorStatus: number;
     let errorUrl: string;
 
-    if (error.error) {
-      userErrorMsg = error.error.message ? error.error.message : 'Erreur inconnue';
-      errorStatus = error.error.status ? error.error.status : 0;
-      errorUrl = error.error.path ? error.error.path : '';
-    } else {
-      userErrorMsg = error.message ? error.message : 'Erreur inconnue';
-      errorStatus = error.status ? error.status : 0;
-      errorUrl = error.path ? error.path : '';
-    }
+    userErrorMsg = error.message ? error.message : 'Erreur inconnue';
+    errorStatus = error.status ? error.status : 0;
+    errorUrl = error.path ? error.path : '';
 
     switch (errorStatus) {
       case 500:
         // this.translateService.get('error.500').subscribe((res: {title, body}) => {
-        //   this.notificationService.sendNotification(res.title + ' - ' + res.body, 'OK');
+        //   this.notificationService.sendNotification(res.title + ' - ' + res.body, '');
         // });
-        this.notificationService.sendNotification('@TODO', 'OK');
+        this.notificationService.sendNotification('@TODO');
         break;
 
       // App maintenance mode (error.message = 'service.is.under.maintenance') is managed in
@@ -54,17 +48,17 @@ export class ErrorHandlingService {
           // do nothing
         } else {
           // this.translateService.get('error.401').subscribe((res: {title, body}) => {
-          //   this.notificationService.sendNotification(res.title + ' - ' + res.body, 'OK');
+          //   this.notificationService.sendNotification(res.title + ' - ' + res.body, '');
           // });
-          this.notificationService.sendNotification('@TODO', 'OK');
+          this.notificationService.sendNotification('@TODO');
         }
         break;
 
       default:
         // this.translateService.get('error.defaultError').subscribe((defaultErrorRes: {title, body}) => {
-        //   this.notificationService.sendNotification(defaultErrorRes + ' - ' + userErrorMsg, 'OK');
+        //   this.notificationService.sendNotification(defaultErrorRes + ' - ' + userErrorMsg, '');
         // });
-        this.notificationService.sendNotification('@TODO', 'OK');
+        this.notificationService.sendNotification('@TODO');
         break;
     }
   }
