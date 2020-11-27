@@ -9,7 +9,6 @@ import { MatSnackBar, MatSnackBarRef, SimpleSnackBar, MatSnackBarConfig } from '
   providedIn: 'root'
 })
 export class NotificationService {
-  notifications: SimpleSnackBar[] = [];
   // snackBarRef: SimpleSnackBar;
   snackBarRef: any;
 
@@ -22,7 +21,7 @@ export class NotificationService {
       message,
       action,
       {
-        duration: options && options.duration ? options.duration : 5000,
+        duration: action ? 0 : (options && options.duration ? options.duration : 5000),
         panelClass: options && options.panelClass ?
           (options.panelClass instanceof Array ?
             ['mycloud-theme', options.panelClass.join(' ')] : ['mycloud-theme', options.panelClass])

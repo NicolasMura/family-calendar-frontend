@@ -2,17 +2,22 @@
   <mat-sidenav-container>
     <mat-sidenav #sidenav mode="over"
                  [fixedInViewport]="true">
-      <mat-nav-list>
+      <mat-nav-list (click)="sidenav.toggle()" *ngIf="currentUser$ | async">
+        <a mat-list-item (click)="logout()">Logout</a>
         <a mat-list-item routerLink="">Accueil</a>
         <a mat-list-item routerLink="settings">Settings</a>
+        <a mat-list-item (click)="pushNotificationService.askForNotificationPermission()">Ask for Push Notification Permission</a>
+        <a mat-list-item (click)="pushNotificationService.displayConfirmNotification()">Test Push Notification</a>
         <a mat-list-item routerLink="." *ngFor="let nav of fillerNav">{{ nav }}</a>
       </mat-nav-list>
     </mat-sidenav>
 
     <mat-sidenav-content>
       <mat-toolbar color="primary">
-        <button mat-icon-button (click)="sidenav.toggle()"><mat-icon>menu</mat-icon></button>
-        <h1 class="example-app-name">Responsive App - V10</h1>
+        <button mat-icon-button *ngIf="currentUser$ | async" (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <h1 class="example-app-name">Responsive App - V13</h1>
       </mat-toolbar>
 
       <main>

@@ -1,7 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
+import { AuthService } from 'projects/tools/src/lib/services/auth.service';
+import { UserService } from 'projects/tools/src/lib/services/user.service';
+import { PushNotificationService } from 'projects/tools/src/lib/services/push-notification.service';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
+import { UtilitiesService } from 'projects/tools/src/lib/services/utilities.service';
+import { Observable } from 'rxjs';
+import { User } from 'projects/tools/src/lib/models/user.model';
 // import { buildInfo } from 'projects/public/src/build';
 // import { fadeInOutAnimation } from 'projects/lib-mycloud/src/lib/shared/animations/animations';
 
@@ -11,15 +17,13 @@ import { NotificationService } from 'projects/tools/src/lib/services/notificatio
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  fillerNav = Array.from({length: 50}, (_, i) => `Nav Item ${i + 1}`);
+export class AppComponent implements OnInit {
+  /**
+   * Observable that gives current user
+   */
+  currentUser$: Observable<User> = null as any;
 
-  fillerContent = Array.from({length: 50}, () =>
-      `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-       labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-       laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-       voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-       cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`);
+  fillerNav = Array.from({length: 3}, (_, i) => `Nav Item ${i + 1}`);
 
   /**
    * IBuildInfo interface and typings
@@ -36,7 +40,11 @@ export class AppComponent {
   constructor(
     private swUpdate: SwUpdate,
     private snackBar: MatSnackBar,
-    private notificationService: NotificationService
+    private authService: AuthService,
+    private userService: UserService,
+    public pushNotificationService: PushNotificationService,
+    private notificationService: NotificationService,
+    private utilitiesService: UtilitiesService
   ) {
     // this.buildInfo = buildInfo;
 
@@ -58,24 +66,22 @@ export class AppComponent {
     // );
 
     // Service Workers
-    swUpdate.available.subscribe(event => {
+    this.swUpdate.available.subscribe(event => {
       console.log('current version is', event.current);
       console.log('available version is', event.available);
 
-      this.notificationService.sendNotification('New version available. Load New Version?', 'OK', {
-        duration: 0,
-      })
+      this.notificationService.sendNotification('New version available. Load New Version?', 'OK')
         .onAction().subscribe(() => {
           window.location.reload();
         });
     });
 
-    swUpdate.activated.subscribe(event => {
+    this.swUpdate.activated.subscribe(event => {
       console.log('old version was', event.previous);
       console.log('new version is', event.current);
     });
 
-    /* iOS specific - HAS TO BE TESTED */
+    /* iOS specific */
     // See https://itnext.io/part-1-building-a-progressive-web-application-pwa-with-angular-material-and-aws-amplify-5c741c957259
     // Detects if device is on iOS
     const isIos = () => {
@@ -96,8 +102,29 @@ export class AppComponent {
     /* iOS specific */
   }
 
+  ngOnInit(): void {
+    // check if app is in maintenance mode
+    this.utilitiesService.isAppInMaintenanceMode().subscribe((inMaintenance: boolean) => {
+      if (!inMaintenance) {
+        this.authService.checkForExistingToken();
+      }
+    }, error => {
+      console.error(error);
+    });
+
+    // subscribe to user observable
+    this.currentUser$ = this.userService.currentUser$;
+
+    // get all family members
+    this.userService.getAllUsers();
+  }
+
   public onIndexChange(index: number): void {
     console.log('Swiper index: ', index);
+  }
+
+  public logout(): void {
+    this.authService.logout();
   }
 }
 

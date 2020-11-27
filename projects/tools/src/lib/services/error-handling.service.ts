@@ -33,7 +33,7 @@ export class ErrorHandlingService {
         // this.translateService.get('error.500').subscribe((res: {title, body}) => {
         //   this.notificationService.sendNotification(res.title + ' - ' + res.body, '');
         // });
-        this.notificationService.sendNotification('@TODO');
+        this.notificationService.sendNotification(userErrorMsg);
         break;
 
       // App maintenance mode (error.message = 'service.is.under.maintenance') is managed in
@@ -50,7 +50,7 @@ export class ErrorHandlingService {
           // this.translateService.get('error.401').subscribe((res: {title, body}) => {
           //   this.notificationService.sendNotification(res.title + ' - ' + res.body, '');
           // });
-          this.notificationService.sendNotification('@TODO');
+          this.notificationService.sendNotification(userErrorMsg);
         }
         break;
 

@@ -3,12 +3,14 @@ import { Routes, RouterModule } from '@angular/router';
 import { CalendarComponent } from './calendar/calendar.component';
 import { LoginComponent } from './login/login.component';
 import { SettingsComponent } from './settings/settings.component';
+import { AuthGuard } from 'projects/tools/src/lib/guards/auth.guard';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: CalendarComponent
+    component: CalendarComponent,
+    canActivate: [ AuthGuard ]
   },
   {
     path: 'login',
@@ -16,7 +18,8 @@ const routes: Routes = [
   },
   {
     path: 'settings',
-    component: SettingsComponent
+    component: SettingsComponent,
+    canActivate: [ AuthGuard ]
   }
 ];
 

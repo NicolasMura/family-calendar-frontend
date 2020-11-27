@@ -3,7 +3,8 @@
  */
 // const appVersion = 'prod';
 // const apiVersion = '2.1';
-const apiPath      = '/rest/api/v1';
+const apiPath      = '/v1';
+// const apiPath      = '/rest/api/v1';
 // const apiPathAdmin = '/admin' + apiPath;
 // const apiPathPublic = '/public' + apiPath;
 
@@ -19,8 +20,8 @@ export const environment = {
   serviceWorkerScript: 'sw-master.js',
 
   backendApi: {
-    baseUrlAuth:          'https://<@TODO>/auth',
-    baseUrlUser:          'https://<@TODO>' + apiPath,
-    baseUrlCalendarEvent: 'https://<@TODO>' + apiPath,
+    baseUrlAuth:          'https://family-calendar.nicolasmura.com/auth',
+    baseUrlUser:          'https://family-calendar.nicolasmura.com' + apiPath + '/users',
+    baseUrlCalendarEvent: 'https://family-calendar.nicolasmura.com' + apiPath + '/events',
   },
 };

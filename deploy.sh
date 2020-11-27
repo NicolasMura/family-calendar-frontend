@@ -13,4 +13,4 @@ ssh -i $path_ssh_key nmura@family-calendar.nicolasmura.com bash -c "'
   echo Décompression...
   tar xzf dist.tar.gz
 '";
-# echo done
+echo done

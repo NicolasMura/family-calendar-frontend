@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from 'projects/tools/src/environments/environment';
 import { GlobalService } from './global-service.service';
 import { ErrorHandlingService } from 'projects/tools/src/lib/services/error-handling.service';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { User } from 'projects/tools/src/lib/models/user.model';
+import { catchError, delay, tap } from 'rxjs/operators';
 
 
 /**
@@ -21,7 +23,7 @@ export class UserService extends GlobalService {
    * Private current logged user, as a behavior subject so we can provide a default value
    * Nobody outside the UserService should have access to this BehaviorSubject
    */
-  private readonly currentUser = new BehaviorSubject<User>(new User(''));
+  private readonly currentUser: BehaviorSubject<User> = new BehaviorSubject<User>(null as any);
   /**
    * Expose the observable$ part of the currentUser subject (read only stream)
    */
@@ -31,10 +33,15 @@ export class UserService extends GlobalService {
    * Variables representing a part of application state, in a Redux inspired way
    */
   private userStore: {
-    currentUser: User
-  } = { currentUser: new User('') };
+    currentUser: User,
+    users: User[]
+  } = {
+    currentUser: null as any,
+    users: []
+  };
 
   constructor(
+    private http: HttpClient,
     protected notificationService: NotificationService,
     protected errorHandlingService: ErrorHandlingService
   ) {
@@ -51,16 +58,19 @@ export class UserService extends GlobalService {
   /**
    * Set current user
    */
-  public setCurrentUser(userDecoded: { email: string, iat: number, exp: number } | null): void {
-    let user: User = new User('');
+  public setCurrentUser(userDecoded: User & { iat: number, exp: number } | null): void {
+
+    let user: User = null as any;
 
     if (userDecoded) {
       user = new User(
-        userDecoded.email
+        userDecoded.mobile || '',
+        userDecoded.email,
+        userDecoded.profile
       );
     }
 
-    this.userStore.currentUser = user;
+    this.userStore.currentUser = user as User;
     this.currentUser.next(Object.assign({}, this.userStore).currentUser);
   }
 
@@ -76,5 +86,18 @@ export class UserService extends GlobalService {
   public getUserLastNameFromEmail(email: string): string {
     const username = email.substr(0, email.indexOf('@'));
     return username.split('.')[1];
+  }
+
+  /**
+   * Get all users / family members
+   */
+  public getAllUsers(): Observable<User[]> {
+    const url = `${this.baseUrlUser}`;
+    return this.http.get<User[]>(url)
+      .pipe(
+        delay(1000),
+        tap((users: User[]) => this.userStore.users = users),
+        catchError(error => this.handleError(error))
+      );
   }
 }

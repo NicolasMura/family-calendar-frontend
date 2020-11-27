@@ -7,6 +7,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { delay, catchError, map, tap } from 'rxjs/operators';
 import jwt_decode from 'jwt-decode';
 import { environment } from 'projects/tools/src/environments/environment';
+import { CoreConstants } from 'projects/tools/src/lib/core-constants';
 import { GlobalService } from './global-service.service';
 import { UserService } from './user.service';
 import { ErrorHandlingService } from 'projects/tools/src/lib/services/error-handling.service';
@@ -27,7 +28,7 @@ export class AuthService extends GlobalService {
   /**
    * Store token in local storage, allowing to retrieve credentials when application starts
    */
-  @LocalStorage('tokenLocalStorage') private tokenLocalStorage: string | null = null;
+  @LocalStorage('tokenLocalStorage') private tokenLocalStorage: string | undefined;
 
   /**
    * Private user token, as a behavior subject so we can provide a default value
@@ -62,6 +63,7 @@ export class AuthService extends GlobalService {
    */
   public checkForExistingToken(): void {
     const existingToken = this.getToken();
+    console.log(existingToken);
     if (existingToken) {
       // if token exists and is valid, start session
       if (!this.isTokenExpired(existingToken)) {
@@ -113,9 +115,8 @@ export class AuthService extends GlobalService {
   /**
    * Log out
    */
-  public logout(): Observable<any> {
-    // @TODO
-    return of(true);
+  public logout(): void {
+    this.cancelSession();
   }
 
   public startSession(token: string): void {
@@ -130,7 +131,7 @@ export class AuthService extends GlobalService {
     this.authStore.token = null;
     this.token.next(Object.assign({}, this.authStore).token);
     this.userService.setCurrentUser(null);
-    this.router.navigate(['/']);
+    this.router.navigate([CoreConstants.routePath.login]);
   }
 
   public getToken(): string | null {
@@ -140,7 +141,7 @@ export class AuthService extends GlobalService {
     return this.token.getValue();
   }
 
-  public isTokenExpired(token: string): boolean {
+  public isTokenExpired(token: string | null): boolean {
     if (!token) { return true; }
 
     const date = this.getTokenExpirationDate(token);

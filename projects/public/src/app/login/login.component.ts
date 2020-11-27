@@ -1,5 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { CoreConstants } from 'projects/tools/src/lib/core-constants';
 import { AuthService } from 'projects/tools/src/lib/services/auth.service';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { LoginResponse } from 'projects/tools/src/lib/models/login-response.model';
@@ -22,12 +24,17 @@ export class LoginComponent implements OnInit {
   get passwordInput(): AbstractControl | null { return this.loginForm.get('password'); }
 
   constructor(
+    private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
+    // redirect user to calendar page if already logged
+    if (this.authService.getToken()) {
+      this.router.navigate([CoreConstants.routePath.root]);
+    }
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', Validators.required]
@@ -45,6 +52,7 @@ export class LoginComponent implements OnInit {
     if (email && password) {
       this.authService.login(email, password).subscribe((loginResponse: LoginResponse) => {
         console.log(loginResponse);
+        this.router.navigate([CoreConstants.routePath.root]);
       }, error => {
         // @TODO : gestion fine des erreurs avec le backend + handleError()
         console.error(error);

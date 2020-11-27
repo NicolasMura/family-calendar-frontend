@@ -7,7 +7,8 @@
  */
 // const appVersion = 'local';
 // const apiVersion = '2.1';
-const apiPath      = '/rest/api/v1';
+const apiPath      = '/v1';
+// const apiPath      = '/rest/api/v1';
 // const apiPathAdmin = '/admin' + apiPath;
 // const apiPathPublic = '/public' + apiPath;
 
@@ -24,8 +25,8 @@ export const environment = {
 
   backendApi: {
     baseUrlAuth:          'http://localhost:3000/auth',
-    baseUrlUser:          'http://localhost:3000' + apiPath,
-    baseUrlCalendarEvent: 'http://localhost:3000' + apiPath,
+    baseUrlUser:          'http://localhost:3000' + apiPath + '/users',
+    baseUrlCalendarEvent: 'http://localhost:3000' + apiPath + '/events',
   },
 };
 
