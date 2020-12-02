@@ -45,3 +45,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Misc
+package.json.bkp
+package-lock.json.bkp

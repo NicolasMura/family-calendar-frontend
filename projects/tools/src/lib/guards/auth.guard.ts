@@ -22,9 +22,8 @@ export class AuthGuard implements CanActivate, CanLoad {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    const isSessionActive = this.authService.getToken();
-    console.log(isSessionActive);
-    if (isSessionActive) {
+    const token = this.authService.getToken();
+    if (token) {
 
       const isAdmin = false;
       // const isAdmin = this.userService.getCurrentUser()?.admin;

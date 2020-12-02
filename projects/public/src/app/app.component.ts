@@ -1,8 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
+import { skip } from 'rxjs/operators';
+import * as moment from 'moment';
+import { CoreConstants } from 'projects/tools/src/lib/core-constants';
 import { AuthService } from 'projects/tools/src/lib/services/auth.service';
 import { UserService } from 'projects/tools/src/lib/services/user.service';
+import { CalendarEventService } from 'projects/tools/src/lib/services/calendar-event.service';
 import { PushNotificationService } from 'projects/tools/src/lib/services/push-notification.service';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { UtilitiesService } from 'projects/tools/src/lib/services/utilities.service';
@@ -17,14 +22,23 @@ import { User } from 'projects/tools/src/lib/models/user.model';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewChecked {
   /**
    * Observable that gives current user
    */
   currentUser$: Observable<User> = null as any;
-
-  fillerNav = Array.from({length: 3}, (_, i) => `Nav Item ${i + 1}`);
-
+  /**
+   * Observable that gives current moment
+   */
+  currentMoment$: Observable<moment.Moment> = null as any;
+  /**
+   * Current moment
+   */
+  currentMoment: moment.Moment = null as any;
+  /**
+   * Current moment
+   */
+  currentMonth = '';
   /**
    * IBuildInfo interface and typings
    */
@@ -38,15 +52,21 @@ export class AppComponent implements OnInit {
   // }
 
   constructor(
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef,
     private swUpdate: SwUpdate,
     private snackBar: MatSnackBar,
     private authService: AuthService,
     private userService: UserService,
+    private calendarEventService: CalendarEventService,
     public pushNotificationService: PushNotificationService,
     private notificationService: NotificationService,
     private utilitiesService: UtilitiesService
   ) {
     // this.buildInfo = buildInfo;
+
+    // use fr locale for moment
+    moment.locale('fr');
 
     // console.log(
     //   `\n%cBuild Info:\n\n` +
@@ -112,19 +132,36 @@ export class AppComponent implements OnInit {
       console.error(error);
     });
 
-    // subscribe to user observable
+    // subscribe to current user observable
     this.currentUser$ = this.userService.currentUser$;
 
-    // get all family members
-    this.userService.getAllUsers();
+    // subscribe to current moment observable
+    // this.currentMoment$ = this.calendarEventService.currentMoment$;
+    this.calendarEventService.currentMoment$
+      .pipe(skip(1))
+      .subscribe((updatedCurrentMoment: moment.Moment) => {
+        this.currentMonth = updatedCurrentMoment.format('MMMM');
+      });
   }
 
-  public onIndexChange(index: number): void {
-    console.log('Swiper index: ', index);
+  ngAfterViewChecked(): void {
+    // To avoid ExpressionChangedAfterItHasBeenCheckedError for currentMonth
+    this.changeDetectorRef.detectChanges();
   }
 
   public logout(): void {
     this.authService.logout();
+  }
+
+  public goToMainCalendar(): void {
+    const navigationExtras: NavigationExtras = {
+      queryParams: { init_unix_date: this.calendarEventService.getCurrentMoment()?.unix() }
+    };
+    this.router.navigate([CoreConstants.routePath.root]);
+  }
+
+  public goToSettings(): void {
+    this.router.navigate([CoreConstants.routePath.settings]);
   }
 }
 

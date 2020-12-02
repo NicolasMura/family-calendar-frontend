@@ -1,10 +1,29 @@
-<!-- <div *ngFor="let user of userService.">
-  {{ user.profile.name }}
-</div> -->
-<swiper class="swiper-container" [config]="config" (indexChange)="onIndexChange($event)" style="outline: 1px solid red;">
-  <div *ngFor="let content of fillerContent" class="swiper-slide">
-    <div>
-      {{ content }}
+<div class="users" style="display: flex; height: 40px; background-color: red;">
+  <div style="flex: 1;"></div>
+  <div *ngFor="let user of userService.users" style="flex: 1;">
+    {{ user.profile.name }}
+  </div>
+</div>
+<swiper #weeksSwiper class="swiper-container" *ngIf="userService.users"
+        [config]="config"
+        [(index)]="sliderIndex"
+        [disabled]="isSliderDisabled"
+        (indexChange)="onIndexChange($event)"
+        (slideChangeTransitionEnd)="onSlideChangeTransitionEnd($event)"
+        style="outline: 1px solid red;">
+  <div *ngFor="let weekSlide of calendarEventService.weeksSlides" class="swiper-slide" style="display: flex; flex-direction: column;">
+    <div style="position: absolute; left: 75px;">{{ weekSlide?.weekNumber }}</div>
+    <div class="week" style="height: 100%; background-color: cyan; display: flex; flex-direction: column; justify-content: space-around;">
+      <div class="day" *ngFor="let day of weekSlide?.days" style="flex: calc(1/7); display: flex; outline: 1px solid brown;">
+        <div class="label" style="flex: 1;">
+          {{ day.nb }}<br>{{ day.label }}
+        </div>
+        <div class="events" *ngFor="let user of userService.users" style="flex: 1; outline: 1px solid cornflowerblue;">
+          <div class="events" *ngFor="let event of day.events">
+            <span *ngIf="event.usersEmails.includes(user.email)">{{ event.title }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </swiper>

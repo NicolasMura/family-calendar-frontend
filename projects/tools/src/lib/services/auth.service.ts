@@ -63,7 +63,7 @@ export class AuthService extends GlobalService {
    */
   public checkForExistingToken(): void {
     const existingToken = this.getToken();
-    console.log(existingToken);
+    // console.log(existingToken);
     if (existingToken) {
       // if token exists and is valid, start session
       if (!this.isTokenExpired(existingToken)) {

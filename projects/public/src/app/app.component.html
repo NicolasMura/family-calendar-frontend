@@ -2,25 +2,26 @@
   <mat-sidenav-container>
     <mat-sidenav #sidenav mode="over"
                  [fixedInViewport]="true">
-      <mat-nav-list (click)="sidenav.toggle()" *ngIf="currentUser$ | async">
-        <a mat-list-item (click)="logout()">Logout</a>
-        <a mat-list-item routerLink="">Accueil</a>
-        <a mat-list-item routerLink="settings">Settings</a>
-        <a mat-list-item (click)="pushNotificationService.askForNotificationPermission()">Ask for Push Notification Permission</a>
-        <a mat-list-item (click)="pushNotificationService.displayConfirmNotification()">Test Push Notification</a>
-        <a mat-list-item routerLink="." *ngFor="let nav of fillerNav">{{ nav }}</a>
+      <mat-nav-list *ngIf="currentUser$ | async">
+        <a mat-list-item (click)="sidenav.toggle(); logout()">Logout</a>
+        <a mat-list-item (click)="sidenav.toggle(); goToMainCalendar();">Semaine familiale</a>
+        <a mat-list-item (click)="sidenav.toggle();">Agenda (soon...)</a>
+        <a mat-list-item (click)="sidenav.toggle(); goToSettings();">Settings</a>
+        <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.askForNotificationPermission()">Ask for Push Notification Permission</a>
+        <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.displayConfirmNotification()">Test Push Notification</a>
       </mat-nav-list>
     </mat-sidenav>
 
     <mat-sidenav-content>
-      <mat-toolbar color="primary">
-        <button mat-icon-button *ngIf="currentUser$ | async" (click)="sidenav.toggle()">
+      <mat-toolbar color="primary" *ngIf="currentUser$ | async">
+        <button mat-icon-button (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
-        <h1 class="example-app-name">Responsive App - V13</h1>
+        <!-- <h1 class="example-app-name">{{ (currentMoment$ | async)?.month() }} - V17</h1> -->
+        <h1 class="example-app-name">{{ currentMonth | titlecase }} - V17</h1>
       </mat-toolbar>
 
-      <main>
+      <main [ngClass]="{'isLogged': currentUser$ | async}">
         <router-outlet #o="outlet"></router-outlet>
       </main>
 

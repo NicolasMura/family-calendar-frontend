@@ -24,9 +24,13 @@
       }
 
       main {
-        height: calc(100% - 64px);
-        margin-top: 64px;
         background-color: bisque;
+        height: 100%;
+
+        &.isLogged {
+          height: calc(100% - 64px); // 64px = mat-toolbar height
+          margin-top: 64px;
+        }
       }
     }
   }

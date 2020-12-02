@@ -6,7 +6,7 @@ import { GlobalService } from './global-service.service';
 import { ErrorHandlingService } from 'projects/tools/src/lib/services/error-handling.service';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { User } from 'projects/tools/src/lib/models/user.model';
-import { catchError, delay, tap } from 'rxjs/operators';
+import { catchError, delay, map, tap } from 'rxjs/operators';
 
 
 /**
@@ -28,6 +28,15 @@ export class UserService extends GlobalService {
    * Expose the observable$ part of the currentUser subject (read only stream)
    */
   readonly currentUser$: Observable<User> = this.currentUser.asObservable();
+  /**
+   * Users who are members of family
+   */
+  // public users: User[] | any[] = [1, 2, 3];
+  public users: User[] = [
+    new User('', '', '', { name: '' }),
+    new User('', '', '', { name: '' }),
+    new User('', '', '', { name: '' })
+  ];
 
   /**
    * Variables representing a part of application state, in a Redux inspired way
@@ -59,16 +68,17 @@ export class UserService extends GlobalService {
    * Set current user
    */
   public setCurrentUser(userDecoded: User & { iat: number, exp: number } | null): void {
-
     let user: User = null as any;
 
     if (userDecoded) {
       user = new User(
+        userDecoded._id,
         userDecoded.mobile || '',
         userDecoded.email,
         userDecoded.profile
       );
     }
+    console.log(user);
 
     this.userStore.currentUser = user as User;
     this.currentUser.next(Object.assign({}, this.userStore).currentUser);
@@ -96,7 +106,17 @@ export class UserService extends GlobalService {
     return this.http.get<User[]>(url)
       .pipe(
         delay(1000),
-        tap((users: User[]) => this.userStore.users = users),
+        map((users: User[]) => {
+          const usersWellFormatted = users.map((user: User) => new User(
+            user._id,
+            user.mobile || '',
+            user.email,
+            user.profile,
+          ));
+          this.users = usersWellFormatted;
+          this.userStore.users = usersWellFormatted;
+          return usersWellFormatted;
+        }),
         catchError(error => this.handleError(error))
       );
   }

@@ -16,6 +16,13 @@ import { SettingsComponent } from './settings/settings.component';
 import { WINDOW } from 'projects/tools/src/lib/services/utilities.service';
 import { TokenInterceptor } from 'projects/tools/src/lib/interceptors/token.interceptor';
 
+/**
+ * Register French locale
+ */
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+registerLocaleData(localeFr, 'fr');
+
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   observer: true,
   direction: 'horizontal',
