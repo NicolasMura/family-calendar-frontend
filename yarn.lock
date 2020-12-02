@@ -125,6 +125,20 @@
     ora "5.1.0"
     rxjs "6.6.3"
 
+"@angular-material-components/datetime-picker@^4.0.5":
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/@angular-material-components/datetime-picker/-/datetime-picker-4.0.5.tgz#5fd93815637666f536a66f42d9697ba650bca081"
+  integrity sha512-nshCZwkOzyZp8Vzbl2pab71jn622BeykW+pg7YkqG5aViUyqZfWfBzxMbl9U14j2Kr3bBuAp3b8pxuOzzcRD6Q==
+  dependencies:
+    tslib "^2.0.0"
+
+"@angular-material-components/moment-adapter@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@angular-material-components/moment-adapter/-/moment-adapter-4.0.1.tgz#a2827110f4f8f028926ecb3905e1abc90eaf7b1d"
+  integrity sha512-wHLRZKHOTAaY7EzM8p7EBGIMKdHAuY4HU1UjmvAuwMZ4uy1eIGSkGPS4MP3MtSq68Mj3aUyeDCCMeJM8IoGtnw==
+  dependencies:
+    tslib "^2.0.0"
+
 "@angular/animations@^11.0.2":
   version "11.0.2"
   resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-11.0.2.tgz#c095ab0aed4491732c81a894987bcab1a854ab15"
@@ -223,6 +237,13 @@
   version "11.0.2"
   resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-11.0.2.tgz#68de53edfd504b570bfcd23f371a2f21fbec5c49"
   integrity sha512-Rn17VPviTTwiDn8Yt/UzdkXjFX0LdvjkmTNZoakqOk8/QNnsCG5sUDJAV7BKHk+2nEfUGCopS4kpBiLKLoaBpQ==
+  dependencies:
+    tslib "^2.0.0"
+
+"@angular/material-moment-adapter@^11.0.1":
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/material-moment-adapter/-/material-moment-adapter-11.0.1.tgz#48c31750b835c5697eaa401600c969fb124f4df3"
+  integrity sha512-tsSBh2eKPKh0tlCSHulc83XmsFnD9/2YkrMJDmGVJkegkx7cwSyqqmYAv/kaQbW41EGbDmDmXB04Z/8mXjca+A==
   dependencies:
     tslib "^2.0.0"
 
@@ -7492,6 +7513,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
+
+roboto-fontface@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/roboto-fontface/-/roboto-fontface-0.10.0.tgz#7eee40cfa18b1f7e4e605eaf1a2740afb6fd71b0"
+  integrity sha512-OlwfYEgA2RdboZohpldlvJ1xngOins5d7ejqnIBWr9KaMxsnBqotpptRXTyfNRLnFpqzX6sTDt+X+a+6udnU8g==
 
 rollup-plugin-sourcemaps@^0.6.0:
   version "0.6.3"

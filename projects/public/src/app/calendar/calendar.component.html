@@ -19,8 +19,8 @@
           {{ day.nb }}<br>{{ day.label }}
         </div>
         <div class="events" *ngFor="let user of userService.users" style="flex: 1; outline: 1px solid cornflowerblue;">
-          <div class="events" *ngFor="let event of day.events">
-            <span *ngIf="event.usersEmails.includes(user.email)">{{ event.title }}</span>
+          <div class="events" *ngFor="let event of day.events" (click)="viewEventDetailDialog(event);" style="background-color: yellowgreen;">
+            <span *ngIf="event?.usersEmails.includes(user?.email)">{{ event?.title }}</span>
           </div>
         </div>
       </div>

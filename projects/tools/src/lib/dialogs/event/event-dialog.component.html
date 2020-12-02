@@ -1,0 +1,34 @@
+<form [formGroup]="eventForm" novalidate>
+
+  <button mat-flat-button color="primary" aria-label="login"
+          (click)=save()
+          [disabled]="!eventForm.valid || submitLoadingSpinner"
+          [class.mc-spinner]="submitLoadingSpinner"
+          class="submit">
+    Enregistrer
+  </button>
+
+  <mat-form-field appearance="legacy">
+    <mat-label for="title">Title</mat-label>
+    <input matInput type="text" formControlName="title" />
+    <mat-error *ngIf="errorHandling('title', 'required')">
+      Erreur: champ requis
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Début</mat-label>
+    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
+           formControlName="standardStartDate"
+           (dateChange)="onStartDateChange($any($event))">
+    <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #picker [enableMeridian]="false"></ngx-mat-datetime-picker>
+    <mat-error>{{ eventForm.get('standardStartDate')?.errors | json }}</mat-error>
+  </mat-form-field>
+
+  <!-- Debug form START -->
+  <pre style="font-size:15px">{{ eventForm.getRawValue() | json }}</pre>
+  <pre style="font-size:15px">{{ unixStartDate }}</pre>
+  <!-- Debug form END -->
+
+</form>

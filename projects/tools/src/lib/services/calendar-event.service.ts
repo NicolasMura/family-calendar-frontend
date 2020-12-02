@@ -90,16 +90,16 @@ export class CalendarEventService extends GlobalService {
         delay(1000),
         map((events: CalendarEvent[]) => {
           const eventsWellFormatted = events.map((event: CalendarEvent) => new CalendarEvent(
-            event._id,
             event.title,
             event.startDate,
-            event.humanStartDate || moment.unix(Number(event.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
             event.endDate,
-            event.humanEndDate || moment.unix(Number(event.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
             event.usersEmails,
             event.reminders,
             event.color,
-            event.category
+            event.category,
+            event.humanStartDate || moment.unix(Number(event.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            event.humanEndDate || moment.unix(Number(event.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            event._id
           ));
           return eventsWellFormatted;
         }),
@@ -123,14 +123,16 @@ export class CalendarEventService extends GlobalService {
   /**
    * Create new calendar event
    */
-  public postEvent(event: CalendarEvent): Observable<CalendarEvent> {
+  public createEvent(event: CalendarEvent): Observable<CalendarEvent> {
     const url = `${this.baseUrlCalendarEvent}`;
     const body = {
       title: event.title,
       startDate: event.startDate,
       endDate: event.endDate,
       usersEmails: event.usersEmails,
-      reminders: event.reminders
+      reminders: event.reminders,
+      color: event.color,
+      category: event.category
     };
     return this.http.post<CalendarEvent>(url, body)
       .pipe(
@@ -143,7 +145,7 @@ export class CalendarEventService extends GlobalService {
    * Update existing calendar event
    */
   public updateEvent(event: CalendarEvent): Observable<CalendarEvent> {
-    const url = `${this.baseUrlCalendarEvent}`;
+    const url = `${this.baseUrlCalendarEvent}/${event._id}`;
     const body = {
       title: event.title,
       startDate: event.startDate,

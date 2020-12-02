@@ -1,6 +1,4 @@
 export class User {
-  // tslint:disable-next-line: variable-name
-  _id: string;
   mobile?: string;
   email: string;
   profile: {
@@ -8,17 +6,19 @@ export class User {
     gender?: string,
     picture?: string
   };
+  // tslint:disable-next-line: variable-name
+  _id?: string;
 
   constructor(
-    // tslint:disable-next-line: variable-name
-    _id: string,
     mobile: string,
     email: string,
-    profile: { name: string }
+    profile: { name: string },
+    // tslint:disable-next-line: variable-name
+    _id?: string
   ) {
-    this._id = _id;
     this.mobile = mobile;
     this.email = email;
     this.profile = profile;
+    this._id = _id;
   }
 }

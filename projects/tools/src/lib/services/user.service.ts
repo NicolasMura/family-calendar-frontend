@@ -33,9 +33,9 @@ export class UserService extends GlobalService {
    */
   // public users: User[] | any[] = [1, 2, 3];
   public users: User[] = [
-    new User('', '', '', { name: '' }),
-    new User('', '', '', { name: '' }),
-    new User('', '', '', { name: '' })
+    new User('', '', { name: '' }, ''),
+    new User('', '', { name: '' }, ''),
+    new User('', '', { name: '' }, '')
   ];
 
   /**
@@ -72,10 +72,10 @@ export class UserService extends GlobalService {
 
     if (userDecoded) {
       user = new User(
-        userDecoded._id,
         userDecoded.mobile || '',
         userDecoded.email,
-        userDecoded.profile
+        userDecoded.profile,
+        userDecoded._id
       );
     }
     console.log(user);
@@ -108,10 +108,10 @@ export class UserService extends GlobalService {
         delay(1000),
         map((users: User[]) => {
           const usersWellFormatted = users.map((user: User) => new User(
-            user._id,
             user.mobile || '',
             user.email,
             user.profile,
+            user._id
           ));
           this.users = usersWellFormatted;
           this.userStore.users = usersWellFormatted;

@@ -3,11 +3,18 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import {
+  MAT_MOMENT_DATE_FORMATS,
+  MomentDateAdapter,
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+} from '@angular/material-moment-adapter';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { SwiperModule, SwiperConfigInterface, SWIPER_CONFIG } from 'ngx-swiper-wrapper';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent, IosInstallComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToolsModule } from 'projects/tools/src/public-api';
 import { VendorModule } from 'projects/vendor/src/public-api';
 import { environment } from 'projects/tools/src/environments/environment';
 import { LoginComponent } from './login/login.component';
@@ -52,6 +59,7 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
     NgxWebstorageModule.forRoot(),
     SwiperModule,
     AppRoutingModule,
+    ToolsModule,
     VendorModule
   ],
   providers: [
@@ -67,7 +75,18 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
     {
       provide: WINDOW,
       useFactory: () => window
-    }
+    },
+    { provide: MAT_DATE_LOCALE,
+      useValue: 'fr-FR'
+    },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    { provide: MAT_DATE_FORMATS,
+      useValue: MAT_MOMENT_DATE_FORMATS
+    },
   ],
   bootstrap: [AppComponent]
 })

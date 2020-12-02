@@ -58,7 +58,7 @@ export class ErrorHandlingService {
         // this.translateService.get('error.defaultError').subscribe((defaultErrorRes: {title, body}) => {
         //   this.notificationService.sendNotification(defaultErrorRes + ' - ' + userErrorMsg, '');
         // });
-        this.notificationService.sendNotification('@TODO');
+        this.notificationService.sendNotification(userErrorMsg);
         break;
     }
   }

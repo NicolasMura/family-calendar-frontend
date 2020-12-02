@@ -1,0 +1,87 @@
+// @import 'app-material-theme';
+
+// @import 'app-material-buttons';
+// @import 'app-material-dialogs';
+// @import 'app-material-icons';
+// @import 'app-material-notifications';
+// @import 'app-material-select';
+// @import 'app-material-tables';
+// @import 'app-material-tabs';
+// @import 'app-material-tooltips';
+// @import 'app-skeletons';
+// @import 'app-slider-swiper';
+// @import 'app-startup-loader';
+@import 'app-spinners';
+
+
+/*
+===============
+    General
+===============
+*/
+// @TODO : https://medium.com/@aditya_tyagi/import-fonts-in-an-angular-app-the-easy-right-way-ae9e99cab551
+$roboto-font-path: "~roboto-fontface/fonts";
+@import "~roboto-fontface/css/roboto/sass/roboto-fontface";
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  // display: grid;
+  // justify-items: center;
+  // align-items: center;
+  // background-color: $mycloud-bg-color-darker;
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+::selection {
+  // background: $mycloud-primary;
+}
+
+mc-root {
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  position: absolute;
+  top: 72px;
+  bottom: 0;
+  left: 0;
+  right: 0;*
+
+  &.maintenance-mode {
+    top: 0px; // no place for header (= disabled) when app is in maintenance mode
+  }
+}
+
+.mc-color-primary {
+  // color: $mycloud-primary;
+}
+
+/* change chrome autocomplete color */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px white inset;
+  box-shadow: 0 0 0 30px white inset;
+}
+
+/* header */
+header {
+
+}
+
+/* main */
+main {
+
+}
+
+/* tooltips */
+.mat-tooltip {
+  font-size: 14px!important;
+}

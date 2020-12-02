@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
 import { SwiperEvent } from 'ngx-swiper-wrapper/lib/swiper.interfaces';
 import { Observable } from 'rxjs';
@@ -12,6 +13,7 @@ import { User } from 'projects/tools/src/lib/models/user.model';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
 import { Week } from 'projects/tools/src/lib/models/week.model';
 import { Day } from 'projects/tools/src/lib/models/day.model';
+import { EventData, EventDialogComponent } from 'projects/tools/src/lib/dialogs/event/event-dialog.component';
 
 
 @Component({
@@ -47,13 +49,18 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   /**
    * Reference to slider
    */
-  @ViewChild(SwiperDirective, { static: false }) swiperDirectiveRef?: SwiperDirective;
+  @ViewChild(SwiperDirective, { static: false }) private swiperDirectiveRef?: SwiperDirective;
+  /**
+   * Reference to event dialog
+   */
+  public eventDialogRef: MatDialogRef<EventDialogComponent> | undefined;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private swUpdate: SwUpdate,
+    private dialog: MatDialog,
     public userService: UserService,
-    public calendarEventService: CalendarEventService
+    public calendarEventService: CalendarEventService,
   ) { }
 
   ngOnInit(): void {
@@ -91,13 +98,15 @@ export class CalendarComponent implements OnInit, AfterViewInit {
 
       // populate weeks (if not already done)
       if (this.calendarEventService.weeksSlides[0].weekNumber === -1) {
+        console.log('populate 3 first weeks');
+
         this.calendarEventService.weeksSlides = [];
         this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(previousMoment.unix()));
         this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(initMoment.unix()));
         this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(nextMoment.unix()));
 
         // get all events between (current Week - 1) and (current Week +1)
-        console.log('Fetch event for weeks ' + this.calendarEventService.weeksSlides[this.sliderIndex - 1].weekNumber +
+        console.log('Fetch events for weeks ' + this.calendarEventService.weeksSlides[this.sliderIndex - 1].weekNumber +
         ' to ' + this.calendarEventService.weeksSlides[this.sliderIndex + 1].weekNumber);
         const minDate: string = moment(previousMoment).startOf('week').unix().toString();
         const maxDate: string = moment(nextMoment).endOf('week').unix().toString();
@@ -229,5 +238,71 @@ export class CalendarComponent implements OnInit, AfterViewInit {
 
     const week: Week = new Week(startOfWeek.isoWeek(), days);
     return week;
+  }
+
+  /**
+   * Open event detail view
+   */
+  public viewEventDetailDialog(event: CalendarEvent): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-openEventDetailDialog';
+    dialogConfig.maxWidth = '100vw';
+    dialogConfig.maxHeight = '100vh';
+    dialogConfig.height = '100%';
+    dialogConfig.width = '100%';
+    dialogConfig.panelClass = 'custom-theme'; // @TODO
+    const data: EventData = {
+      event
+    };
+    dialogConfig.data = data;
+    this.eventDialogRef = this.dialog.open(EventDialogComponent, dialogConfig);
+
+    this.eventDialogRef.afterClosed().subscribe((ev: CalendarEvent) => {
+      console.log(ev);
+      if (ev) {
+        // update event in view
+        if (dialogConfig.data.event) {
+
+          // first remove old event
+          let dayIndex = -1;
+          let eventIndex = -1;
+          const updatedDay: Day = this.calendarEventService.weeksSlides[this.calendarEventService.sliderIndexSaved].days
+            .find((day: Day, index: number) => {
+              dayIndex = index;
+              return day.nb === moment.unix(Number(event.startDate)).date();
+            }) as Day;
+          const updatedEvent: CalendarEvent = updatedDay?.events?.find((e: CalendarEvent, index: number) => {
+            eventIndex = index;
+            return e._id === ev._id;
+          }) as CalendarEvent;
+
+          delete this.calendarEventService.weeksSlides[this.calendarEventService.sliderIndexSaved].days[dayIndex].events[eventIndex];
+
+          // then, update by inserting ev
+          this.calendarEventService.weeksSlides.forEach((week: Week) => {
+            console.log(this.isEventInWeek(ev, week));
+            if (this.isEventInWeek(ev, week)) {
+              week.days.forEach((day: Day) => {
+                if (day.nb === moment.unix(Number(ev.startDate)).date()) {
+                  // console.log('Gooooo : ', day.nb);
+                  day.events?.push(ev);
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+  }
+
+  public isEventInWeek(event: CalendarEvent, week: Week): boolean {
+    let isEventInWeek = false;
+    if ((moment.unix(Number(event.startDate)) >= week.days[0].momentObject)
+         && (moment.unix(Number(event.startDate)) <= week.days[6].momentObject.clone().add(1, 'day').add(-1, 'second'))) {
+      isEventInWeek = true;
+    }
+
+    return isEventInWeek;
   }
 }
