@@ -101,6 +101,13 @@ export class UserService extends GlobalService {
   /**
    * Get all users / family members
    */
+  public getUsers(): User[] {
+    return this.userStore.users;
+  }
+
+  /**
+   * Get all users / family members from backend
+   */
   public getAllUsers(): Observable<User[]> {
     const url = `${this.baseUrlUser}`;
     return this.http.get<User[]>(url)

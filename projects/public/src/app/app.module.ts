@@ -1,5 +1,6 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { BrowserModule, HammerModule, HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -13,7 +14,6 @@ import { NgxWebstorageModule } from 'ngx-webstorage';
 import { SwiperModule, SwiperConfigInterface, SWIPER_CONFIG } from 'ngx-swiper-wrapper';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent, IosInstallComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToolsModule } from 'projects/tools/src/public-api';
 import { VendorModule } from 'projects/vendor/src/public-api';
 import { environment } from 'projects/tools/src/environments/environment';
@@ -50,6 +50,7 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   ],
   imports: [
     BrowserModule,
+    HammerModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,

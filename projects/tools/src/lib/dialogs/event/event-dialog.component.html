@@ -1,21 +1,41 @@
-<form [formGroup]="eventForm" novalidate>
+<button mat-icon-button color="primary"
+        (click)=cancel()>
+  <mat-icon>close</mat-icon>
+</button>
 
-  <button mat-flat-button color="primary" aria-label="login"
-          (click)=save()
-          [disabled]="!eventForm.valid || submitLoadingSpinner"
-          [class.mc-spinner]="submitLoadingSpinner"
-          class="submit">
-    Enregistrer
+<button mat-icon-button color="primary" aria-label="close"
+        (click)=save()
+        [disabled]="!eventForm.valid || submitLoadingSpinner"
+        [class.mc-spinner]="submitLoadingSpinner"
+        class="submit"
+        style="float: right;">
+  <mat-icon>done</mat-icon>
+</button>
+
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+        *ngIf="data.existingEvent"
+        style="float: right;">
+  <mat-icon>more_vert</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="remove()">
+    <mat-icon>delete</mat-icon>
+    <span>Supprimer à jamais</span>
   </button>
+</mat-menu>
 
+<form [formGroup]="eventForm" novalidate style="display: flex; flex-direction: column;">
+
+  <!-- Title -->
   <mat-form-field appearance="legacy">
-    <mat-label for="title">Title</mat-label>
-    <input matInput type="text" formControlName="title" />
+    <mat-label for="title">Titre du magnifique événement</mat-label>
+    <input matInput type="text" formControlName="title" libAutofocus />
     <mat-error *ngIf="errorHandling('title', 'required')">
       Erreur: champ requis
     </mat-error>
   </mat-form-field>
 
+  <!-- Start Date -->
   <mat-form-field appearance="fill">
     <mat-label>Début</mat-label>
     <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
@@ -26,9 +46,92 @@
     <mat-error>{{ eventForm.get('standardStartDate')?.errors | json }}</mat-error>
   </mat-form-field>
 
+  <!-- End Date -->
+  <mat-form-field appearance="fill">
+    <mat-label>Fin</mat-label>
+    <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choisir une date"
+           formControlName="standardEndDate"
+           (dateChange)="onEndDateChange($any($event))">
+    <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #picker2 [enableMeridian]="false"></ngx-mat-datetime-picker>
+    <mat-error>{{ eventForm.get('standardEndDate')?.errors | json }}</mat-error>
+  </mat-form-field>
+
+  <!-- Users Emails -->
+  <mat-form-field appearance="fill">
+    <mat-label>Les gens concernés</mat-label>
+    <mat-select formControlName="usersEmails" multiple>
+      <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
+        {{ user.profile.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="errorHandling('usersEmails', 'required')">
+      Erreur: champ requis
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Les gens concernés (native test)</mat-label>
+    <select matNativeControl formControlName="usersEmailsTest" multiple>
+      <option *ngFor="let user of userService.getUsers()" [value]="user.email">
+        {{ user.profile.name }}
+      </option>
+    </select>
+  </mat-form-field>
+
+  <!-- Reminders -->
+  <mat-form-field appearance="fill">
+    <mat-label>Rappel(s)</mat-label>
+    <mat-select formControlName="reminders" multiple>
+      <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
+        {{ user.profile.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Color -->
+  <mat-form-field appearance="fill">
+    <mat-label>Couleur</mat-label>
+    <mat-select formControlName="color">
+      <mat-option value="blue" style="color: rgb(121, 134, 203);">Couleur par défaut</mat-option>
+      <mat-option value="tomate" style="color: rgb(213, 0, 0);">Tomate</mat-option>
+      <mat-option value="banane" style="color: rgb(246, 191, 38);">Banane</mat-option>
+      <mat-option value="myrtille" style="color: rgb(63, 81, 181);">Myrtille</mat-option>
+      <mat-option value="sauge" style="color: rgb(51, 182, 121);">Sauge</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Couleur (native test)</mat-label>
+    <select matNativeControl formControlName="colorTest">
+      <option value="blue" style="color: rgb(121, 134, 203);">Couleur par défaut</option>
+      <option value="tomate" style="color: rgb(213, 0, 0);">Tomate</option>
+      <option value="banane" style="color: rgb(246, 191, 38);">Banane</option>
+      <option value="myrtille" style="color: rgb(63, 81, 181);">Myrtille</option>
+      <option value="sauge" style="color: rgb(51, 182, 121);">Sauge</option>
+    </select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Catégorie</mat-label>
+    <mat-select formControlName="category">
+      <mat-option value="">Aucune</mat-option>
+      <mat-option value="birthday">Anniversaire</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <!-- Debug form START -->
-  <pre style="font-size:15px">{{ eventForm.getRawValue() | json }}</pre>
+  <!-- <pre style="font-size:15px">{{ eventForm.getRawValue() | json }}</pre>
   <pre style="font-size:15px">{{ unixStartDate }}</pre>
+  <pre style="font-size:15px">{{ unixEndDate }}</pre> -->
   <!-- Debug form END -->
+
+  <button mat-flat-button color="primary" aria-label="submit"
+          (click)=save()
+          [disabled]="!eventForm.valid || submitLoadingSpinner"
+          [class.mc-spinner]="submitLoadingSpinner"
+          class="submit">
+    Enregistrer
+  </button>
 
 </form>

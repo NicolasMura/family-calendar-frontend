@@ -2,7 +2,7 @@ import { Day } from './day.model';
 
 export class Week {
   weekNumber: number;
-  days: Day[] | any[];
+  days: Day[];
 
   constructor(weekNumber: number, days: Day[]) {
     this.weekNumber = weekNumber;

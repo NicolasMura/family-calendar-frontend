@@ -1,22 +1,30 @@
 import { Component, OnInit, OnDestroy, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import * as moment from 'moment';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { CalendarEventService } from 'projects/tools/src/lib/services/calendar-event.service';
+import { UserService } from 'projects/tools/src/lib/services/user.service';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
+import { Day } from 'projects/tools/src/lib/models/day.model';
+import { User } from 'projects/tools/src/lib/models/user.model';
 
 
 /**
  * Interface for event dialog datas
  */
 export interface EventData  {
-  event: CalendarEvent;
+  existingEvent?: CalendarEvent;
+  newEvent?: {
+    day: Day,
+    user: User
+  };
 }
 
 /**
- * Component that displays app selector
+ * Component that displays event dialog
  */
 @Component({
   selector: 'lib-event-dialog',
@@ -42,61 +50,81 @@ export class EventDialogComponent implements OnInit {
    */
   standardStartDate: Date | undefined;
   /**
+   * Event end date in standard Date format (ex.: '9/4/2020, 16:45:16') for DateTime Picker
+   */
+  standardEndDate: Date | undefined;
+  /**
    * Event start date in Unix Date format (ex.: '1601555477') for backend
    */
   unixStartDate: string | undefined;
+  /**
+   * Event end date in Unix Date format (ex.: '1601555477') for backend
+   */
+  unixEndDate: string | undefined;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: EventData,
     private eventDialogRef: MatDialogRef<EventDialogComponent>,
     private notificationService: NotificationService,
-    private calendarEventService: CalendarEventService
+    private calendarEventService: CalendarEventService,
+    public userService: UserService
   ) { }
 
   ngOnInit(): void {
-    if (this.data.event) {
-      const event = new CalendarEvent(
-        this.data.event.title,
-        this.data.event.startDate,
-        this.data.event.endDate,
-        this.data.event.usersEmails,
-        this.data.event.reminders,
-        this.data.event.color,
-        this.data.event.category,
-        this.data.event.humanStartDate,
-        this.data.event.humanEndDate,
-        this.data.event._id
-      );
+    const event: CalendarEvent = new CalendarEvent('', '', '', [], [], '', '', '', '');
+
+    if (this.data.existingEvent) {
+      event.title = this.data.existingEvent.title;
+      event.startDate = this.data.existingEvent.startDate;
+      event.endDate = this.data.existingEvent.endDate;
+      event.usersEmails = this.data.existingEvent.usersEmails;
+      event.reminders = this.data.existingEvent.reminders;
+      event.color = this.data.existingEvent.color;
+      event.category = this.data.existingEvent.category;
+      event.humanStartDate = this.data.existingEvent.humanStartDate;
+      event.humanEndDate = this.data.existingEvent.humanEndDate;
+      event._id = this.data.existingEvent._id;
+
       console.log(event);
-      this.unixStartDate = event.startDate;
-
-      // format startDate for DateTimePicker
-      this.standardStartDate = new Date(Number(event.startDate) * 1000);
-
-      // build form
-      this.eventForm = new FormGroup({
-        title: new FormControl(event.title),
-        startDate: new FormControl(event.endDate),
-        endDate: new FormControl(event.endDate),
-        usersEmails: new FormControl(event.usersEmails),
-        reminders: new FormControl(event.reminders),
-        color: new FormControl(event.color),
-        category: new FormControl(event.category),
-        standardStartDate: new FormControl(this.standardStartDate) // standard Date format for DateTime Picker
-      });
-    } else {
-      // build form
-      this.eventForm = new FormGroup({
-        title: new FormControl(''),
-        startDate: new FormControl(''),
-        endDate: new FormControl(''),
-        usersEmails: new FormControl([]),
-        reminders: new FormControl([]),
-        color: new FormControl(''),
-        category: new FormControl(''),
-        standardStartDate: new FormControl('') // standard Date format for DateTime Picker
-      });
     }
+    else if (this.data.newEvent) {
+      event.title = '';
+      event.startDate = this.data.newEvent.day.momentObject.unix().toString();
+      event.endDate = this.data.newEvent.day.momentObject.clone().add(1, 'hour').unix().toString();
+      event.usersEmails = [this.data.newEvent.user.email];
+      event.reminders = [];
+      event.color = 'blue';
+      event.category = '';
+      event.humanStartDate = moment().format('YYYY-MM-DDTHH:mm:ssZ');
+      event.humanEndDate = moment().format('YYYY-MM-DDTHH:mm:ssZ');
+
+      console.log(event);
+    }
+
+    else {
+      console.log('Problème... :/');
+      this.notificationService.sendNotification('Aïe aïe aïe ! Aïe oune pétite problème...');
+    }
+
+    this.unixStartDate = event.startDate;
+    this.unixEndDate = event.endDate;
+
+    // format startDate and endDate for DateTimePicker
+    this.standardStartDate = new Date(Number(event.startDate) * 1000);
+    this.standardEndDate = new Date(Number(event.startDate) * 1000);
+
+    // build form
+    this.eventForm = new FormGroup({
+      title: new FormControl(event.title, Validators.required),
+      usersEmails: new FormControl(event.usersEmails, Validators.minLength(1)),
+      reminders: new FormControl(event.reminders),
+      color: new FormControl(event.color),
+      category: new FormControl(event.category),
+      standardStartDate: new FormControl(this.standardStartDate), // standard Date format for DateTime Picker
+      standardEndDate: new FormControl(this.standardEndDate),  // standard Date format for DateTime Picker
+      usersEmailsTest: new FormControl(event.usersEmails),
+      colorTest: new FormControl(event.color)
+    });
   }
 
   /**
@@ -105,7 +133,17 @@ export class EventDialogComponent implements OnInit {
   onStartDateChange(event: MatDatepickerInputEvent<any>): void {
     if (event.value) {
       this.unixStartDate = Math.round(event.value.valueOf() / 1000).toString();
-      console.log(this.unixStartDate);
+      // console.log(this.unixStartDate);
+    }
+  }
+
+  /**
+   * Real-time endDate form value update
+   */
+  onEndDateChange(event: MatDatepickerInputEvent<any>): void {
+    if (event.value) {
+      this.unixEndDate = Math.round(event.value.valueOf() / 1000).toString();
+      // console.log(this.unixEndDate);
     }
   }
 
@@ -118,17 +156,17 @@ export class EventDialogComponent implements OnInit {
       this.eventForm.get('title')?.value,
       // this.eventForm.get('startDate')?.value,
       this.unixStartDate as string,
-      this.eventForm.get('endDate')?.value,
+      this.unixEndDate as string,
       this.eventForm.get('usersEmails')?.value,
       this.eventForm.get('reminders')?.value,
       this.eventForm.get('color')?.value,
       this.eventForm.get('category')?.value,
-      this.data.event.humanStartDate,
-      this.data.event.humanEndDate,
-      this.data.event ? this.data.event._id : ''
+      moment.unix(Number(this.unixStartDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+      moment.unix(Number(this.unixEndDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+      this.data.existingEvent ? this.data.existingEvent._id : ''
     );
 
-    if (this.data.event) {
+    if (this.data.existingEvent) {
       this.update(event);
     } else {
       this.create(event);
@@ -140,9 +178,10 @@ export class EventDialogComponent implements OnInit {
    */
   public create(event: CalendarEvent): void {
     this.calendarEventService.createEvent(event)
-      .subscribe((e: CalendarEvent) => {
+      .subscribe((newEvent: CalendarEvent) => {
         this.submitLoadingSpinner = false;
         this.notificationService.sendNotification('Événement enregistré !');
+        this.eventDialogRef.close(newEvent);
       }, error => {
         console.error(error);
         this.submitLoadingSpinner = false;
@@ -163,6 +202,29 @@ export class EventDialogComponent implements OnInit {
         console.error(error);
         this.submitLoadingSpinner = false;
       });
+  }
+
+  /**
+   * Delete existing event
+   */
+  public remove(): void {
+    console.log('event to remove :', this.data.existingEvent);
+    this.calendarEventService.deleteEventById(this.data.existingEvent?._id as string)
+      .subscribe((deletedEvent: CalendarEvent) => {
+        this.submitLoadingSpinner = false;
+        this.notificationService.sendNotification('Événement supprimé !');
+        this.eventDialogRef.close(deletedEvent);
+      }, error => {
+        console.error(error);
+        this.submitLoadingSpinner = false;
+      });
+  }
+
+  /**
+   * Close dialog
+   */
+  public cancel(): void {
+    this.eventDialogRef.close();
   }
 
   /*

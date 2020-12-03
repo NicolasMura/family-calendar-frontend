@@ -9,6 +9,7 @@ import { ErrorHandlingService } from 'projects/tools/src/lib/services/error-hand
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
 import { Week } from 'projects/tools/src/lib/models/week.model';
+import { Day } from 'projects/tools/src/lib/models/day.model';
 
 // Mocks
 const CALENDAR_EVENTS_MOCK_URL = './assets/json-mocks/calendar-events.json';
@@ -39,7 +40,8 @@ export class CalendarEventService extends GlobalService {
   public weeksSlides: Week[] = [
     {
       weekNumber: -1,
-      days: [0, 1, 2, 3, 4, 5, 6]
+      days: [0 as unknown as Day, 1 as unknown as Day, 2 as unknown as Day, 3 as unknown as Day,
+        4 as unknown as Day, 5 as unknown as Day, 6 as unknown as Day]
     }
   ];
   /**
@@ -137,6 +139,21 @@ export class CalendarEventService extends GlobalService {
     return this.http.post<CalendarEvent>(url, body)
       .pipe(
         delay(1000),
+        map((newEvent: CalendarEvent) => {
+          const eventWellFormatted = new CalendarEvent(
+            newEvent.title,
+            newEvent.startDate,
+            newEvent.endDate,
+            newEvent.usersEmails,
+            newEvent.reminders,
+            newEvent.color,
+            newEvent.category,
+            newEvent.humanStartDate || moment.unix(Number(newEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            newEvent.humanEndDate || moment.unix(Number(newEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            newEvent._id
+          );
+          return eventWellFormatted;
+        }),
         catchError(error => this.handleError(error))
       );
   }
@@ -156,6 +173,21 @@ export class CalendarEventService extends GlobalService {
     return this.http.put<CalendarEvent>(url, body)
       .pipe(
         delay(1000),
+        map((updatedEvent: CalendarEvent) => {
+          const eventWellFormatted = new CalendarEvent(
+            updatedEvent.title,
+            updatedEvent.startDate,
+            updatedEvent.endDate,
+            updatedEvent.usersEmails,
+            updatedEvent.reminders,
+            updatedEvent.color,
+            updatedEvent.category,
+            updatedEvent.humanStartDate || moment.unix(Number(updatedEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            updatedEvent.humanEndDate || moment.unix(Number(updatedEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            updatedEvent._id
+          );
+          return eventWellFormatted;
+        }),
         catchError(error => this.handleError(error))
       );
   }
@@ -163,11 +195,27 @@ export class CalendarEventService extends GlobalService {
   /**
    * Delete existing calendar event
    */
-  public deleteEventById(eventId: string): Observable<any> {
+  public deleteEventById(eventId: string): Observable<CalendarEvent> {
     const url = `${this.baseUrlCalendarEvent}/${eventId}`;
-    return this.http.delete<any>(url)
+    return this.http.delete<CalendarEvent>(url)
       .pipe(
         delay(1000),
+        map((deletedEvent: CalendarEvent) => {
+          const eventWellFormatted = new CalendarEvent(
+            deletedEvent.title,
+            deletedEvent.startDate,
+            deletedEvent.endDate,
+            deletedEvent.usersEmails,
+            deletedEvent.reminders,
+            deletedEvent.color,
+            deletedEvent.category,
+            deletedEvent.humanStartDate || moment.unix(Number(deletedEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            deletedEvent.humanEndDate || moment.unix(Number(deletedEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            deletedEvent._id,
+            true
+          );
+          return eventWellFormatted;
+        }),
         catchError(error => this.handleError(error))
       );
   }

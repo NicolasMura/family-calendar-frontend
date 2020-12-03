@@ -10,6 +10,8 @@ export class CalendarEvent {
   humanEndDate?: string;
   // tslint:disable-next-line: variable-name
   _id?: string;
+  // tslint:disable-next-line: variable-name
+  _deleted = false;
 
   constructor(
     title: string,
@@ -22,7 +24,9 @@ export class CalendarEvent {
     humanStartDate?: string,
     humanEndDate?: string,
     // tslint:disable-next-line: variable-name
-    _id?: string
+    _id?: string,
+    // tslint:disable-next-line: variable-name
+    _deleted: boolean = false
   ) {
     this.title = title;
     this.startDate = startDate;
@@ -34,5 +38,6 @@ export class CalendarEvent {
     this.humanStartDate = humanStartDate;
     this.humanEndDate = humanEndDate;
     this._id = _id;
+    this._deleted = _deleted;
   }
 }

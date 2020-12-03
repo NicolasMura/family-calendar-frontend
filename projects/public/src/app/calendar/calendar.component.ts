@@ -9,6 +9,7 @@ import { skip } from 'rxjs/operators';
 import * as moment from 'moment';
 import { UserService } from 'projects/tools/src/lib/services/user.service';
 import { CalendarEventService } from 'projects/tools/src/lib/services/calendar-event.service';
+import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
 import { User } from 'projects/tools/src/lib/models/user.model';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
 import { Week } from 'projects/tools/src/lib/models/week.model';
@@ -61,6 +62,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     public userService: UserService,
     public calendarEventService: CalendarEventService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -227,12 +229,12 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     let day: moment.Moment = startOfWeek;
 
     while (day <= endOfWeek) {
-      days.push({
-        momentObject: day,
-        nb: day.date(),
-        label: day.format('dddd'),
-        events: []
-      });
+      days.push(new Day(
+        day,
+        day.date(),
+        day.format('dddd'),
+        []
+      ));
       day = day.clone().add(1, 'day');
     }
 
@@ -241,45 +243,75 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Open event detail view
+   * Open event detail view dialog =
+   * - create view if input is a day
+   * - detail view if input is an event
    */
-  public viewEventDetailDialog(event: CalendarEvent): void {
+  public openEventDetailDialog(input: Day | CalendarEvent, user?: User): void {
+    console.log(input);
+    console.log(user);
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = false;
     dialogConfig.id = 'modal-openEventDetailDialog';
     dialogConfig.maxWidth = '100vw';
     dialogConfig.maxHeight = '100vh';
     dialogConfig.height = '100%';
     dialogConfig.width = '100%';
     dialogConfig.panelClass = 'custom-theme'; // @TODO
-    const data: EventData = {
-      event
-    };
-    dialogConfig.data = data;
-    this.eventDialogRef = this.dialog.open(EventDialogComponent, dialogConfig);
 
+    if (input instanceof CalendarEvent) {
+      console.log('click !');
+
+      const data: EventData = {
+        existingEvent: input
+      };
+      dialogConfig.data = data;
+    }
+
+    else if (input instanceof Day) {
+      console.log('double click !');
+
+      const data: EventData = {
+        newEvent: {
+          day: input,
+          user: user as User
+        }
+      };
+      dialogConfig.data = data;
+    }
+
+    else {
+      console.log('Problème... :/');
+      this.notificationService.sendNotification('Aïe aïe aïe ! Aïe oune pétite problème...');
+    }
+
+    this.eventDialogRef = this.dialog.open(EventDialogComponent, dialogConfig);
     this.eventDialogRef.afterClosed().subscribe((ev: CalendarEvent) => {
       console.log(ev);
-      if (ev) {
-        // update event in view
-        if (dialogConfig.data.event) {
 
-          // first remove old event
+      // update event in view
+      if (ev) {
+        // first remove old event if necessary
+        if (input instanceof CalendarEvent) {
           let dayIndex = -1;
           let eventIndex = -1;
           const updatedDay: Day = this.calendarEventService.weeksSlides[this.calendarEventService.sliderIndexSaved].days
             .find((day: Day, index: number) => {
               dayIndex = index;
-              return day.nb === moment.unix(Number(event.startDate)).date();
+              return day.nb === moment.unix(Number(input.startDate)).date();
             }) as Day;
+          console.log(updatedDay);
           const updatedEvent: CalendarEvent = updatedDay?.events?.find((e: CalendarEvent, index: number) => {
             eventIndex = index;
             return e._id === ev._id;
           }) as CalendarEvent;
 
-          delete this.calendarEventService.weeksSlides[this.calendarEventService.sliderIndexSaved].days[dayIndex].events[eventIndex];
+          this.calendarEventService.weeksSlides[this.calendarEventService.sliderIndexSaved].days[dayIndex].events?.splice(eventIndex, 1);
+        }
 
-          // then, update by inserting ev
+        // then, update by inserting ev (if not deleted)
+        if (!ev._deleted) {
           this.calendarEventService.weeksSlides.forEach((week: Week) => {
             console.log(this.isEventInWeek(ev, week));
             if (this.isEventInWeek(ev, week)) {
@@ -292,10 +324,22 @@ export class CalendarComponent implements OnInit, AfterViewInit {
             }
           });
         }
+
+        console.log(this.calendarEventService.weeksSlides);
       }
     });
   }
 
+  /**
+   * Open event creation view dialog
+   */
+  public createEventDetailDialog(day: Day): void {
+    console.log('dbClick !');
+  }
+
+  /**
+   * Returns true if @param event belongs to @param week, false otherwise
+   */
   public isEventInWeek(event: CalendarEvent, week: Week): boolean {
     let isEventInWeek = false;
     if ((moment.unix(Number(event.startDate)) >= week.days[0].momentObject)
@@ -304,5 +348,9 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     }
 
     return isEventInWeek;
+  }
+
+  testPress(event: any): void {
+    console.log(event);
   }
 }
