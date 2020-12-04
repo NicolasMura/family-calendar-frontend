@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -35,7 +34,6 @@ export class EventDialogComponent implements OnInit {
   /**
    * Event form
    */
-  // public eventForm: FormGroup = new FormGroup({});
   public eventForm: FormGroup = null as any;
   /**
    * Boolean that allows to display a loading spinner on submit button if form is being submitted
@@ -84,6 +82,7 @@ export class EventDialogComponent implements OnInit {
       event.humanStartDate = this.data.existingEvent.humanStartDate;
       event.humanEndDate = this.data.existingEvent.humanEndDate;
       event._id = this.data.existingEvent._id;
+      event._deleted = this.data.existingEvent._deleted;
 
       console.log(event);
     }

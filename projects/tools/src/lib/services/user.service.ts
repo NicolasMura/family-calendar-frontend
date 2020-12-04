@@ -112,7 +112,7 @@ export class UserService extends GlobalService {
     const url = `${this.baseUrlUser}`;
     return this.http.get<User[]>(url)
       .pipe(
-        delay(1000),
+        // delay(1000),
         map((users: User[]) => {
           const usersWellFormatted = users.map((user: User) => new User(
             user.mobile || '',

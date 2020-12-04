@@ -90,7 +90,7 @@ export class AuthService extends GlobalService {
     };
     return this.http.post<LoginResponse>(url, body)
       .pipe(
-        delay(1000),
+        // delay(1000),
         tap((loginResponse: LoginResponse) => this.startSession(loginResponse.token)),
         catchError(error => this.handleError(error))
       );
@@ -107,7 +107,7 @@ export class AuthService extends GlobalService {
     };
     return this.http.post<LoginResponse>(url, body)
       .pipe(
-        delay(1000),
+        // delay(1000),
         catchError(error => this.handleError(error))
       );
   }

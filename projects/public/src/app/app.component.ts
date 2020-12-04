@@ -10,6 +10,7 @@ import { UserService } from 'projects/tools/src/lib/services/user.service';
 import { CalendarEventService } from 'projects/tools/src/lib/services/calendar-event.service';
 import { PushNotificationService } from 'projects/tools/src/lib/services/push-notification.service';
 import { NotificationService } from 'projects/tools/src/lib/services/notification.service';
+import { WebSocketService } from 'projects/tools/src/lib/services/websocket.service';
 import { UtilitiesService } from 'projects/tools/src/lib/services/utilities.service';
 import { Observable } from 'rxjs';
 import { User } from 'projects/tools/src/lib/models/user.model';
@@ -61,12 +62,16 @@ export class AppComponent implements OnInit, AfterViewChecked {
     private calendarEventService: CalendarEventService,
     public pushNotificationService: PushNotificationService,
     private notificationService: NotificationService,
+    private webSocketService: WebSocketService,
     private utilitiesService: UtilitiesService
   ) {
     // this.buildInfo = buildInfo;
 
     // use fr locale for moment
     moment.locale('fr');
+
+    // connect to WebSocket Server
+    this.webSocketService.connect();
 
     // console.log(
     //   `\n%cBuild Info:\n\n` +

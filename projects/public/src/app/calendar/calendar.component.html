@@ -1,3 +1,35 @@
+<!-- <div class="container">
+  <div class="header">
+    <mat-form-field>
+      <input matInput placeholder="Your name here" type="text" [(ngModel)]="sender" [ngModelOptions]="{updateOn: 'blur'}">
+    </mat-form-field>
+  </div>
+  <div *ngIf="!!sender" #viewer class="body">
+    <div class="viewer">
+      <div class="message" *ngFor="let msg of serverMessages" [ngClass]="{'bold': msg.isBroadcast, 'others': !isMine(msg)}">
+        <div class="badge" [style.backgroundColor]="getSenderColor(msg.sender)">{{ getSenderInitials(msg.sender) }}</div>
+        <div class="content" [ngClass]="{'bold': msg.isBroadcast, 'others': !isMine(msg)}">
+          <mat-icon *ngIf="msg.isBroadcast" class="material-icons">speaker_phone</mat-icon>
+          <span>{{ msg.content }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!!sender" class="footer">
+    <form (submit)="send()">
+      <mat-form-field>
+        <input name="clientMessage" matInput placeholder="Write a message" type="text" [(ngModel)]="clientMessage">
+      </mat-form-field>
+      <button mat-fab type="submit">
+        <mat-icon class="material-icons">send</mat-icon>
+      </button>
+      <button mat-fab (click)="toggleIsBroadcast()" type="button" [ngClass]="{'disabled': !isBroadcast}">
+        <mat-icon class="material-icons">speaker_phone</mat-icon>
+      </button>
+    </form>
+  </div>
+</div> -->
+
 <div class="users" style="display: flex; height: 40px; background-color: red;">
   <div style="flex: 1;"></div>
   <div *ngFor="let user of userService.users" style="flex: 1;">

@@ -89,7 +89,7 @@ export class CalendarEventService extends GlobalService {
     // const url = CALENDAR_EVENTS_MOCK_URL;
     return this.http.get<CalendarEvent[]>(url)
       .pipe(
-        delay(1000),
+        // delay(1000),
         map((events: CalendarEvent[]) => {
           const eventsWellFormatted = events.map((event: CalendarEvent) => new CalendarEvent(
             event.title,
@@ -117,7 +117,7 @@ export class CalendarEventService extends GlobalService {
     // const url = CALENDAR_EVENT_MOCK_URL;
     return this.http.get<CalendarEvent>(url)
       .pipe(
-        delay(1000),
+        // delay(1000),
         catchError(error => this.handleError(error))
       );
   }
@@ -138,7 +138,7 @@ export class CalendarEventService extends GlobalService {
     };
     return this.http.post<CalendarEvent>(url, body)
       .pipe(
-        delay(1000),
+        // delay(1000),
         map((newEvent: CalendarEvent) => {
           const eventWellFormatted = new CalendarEvent(
             newEvent.title,
@@ -172,7 +172,7 @@ export class CalendarEventService extends GlobalService {
     };
     return this.http.put<CalendarEvent>(url, body)
       .pipe(
-        delay(1000),
+        // delay(1000),
         map((updatedEvent: CalendarEvent) => {
           const eventWellFormatted = new CalendarEvent(
             updatedEvent.title,
@@ -199,7 +199,7 @@ export class CalendarEventService extends GlobalService {
     const url = `${this.baseUrlCalendarEvent}/${eventId}`;
     return this.http.delete<CalendarEvent>(url)
       .pipe(
-        delay(1000),
+        // delay(1000),
         map((deletedEvent: CalendarEvent) => {
           const eventWellFormatted = new CalendarEvent(
             deletedEvent.title,

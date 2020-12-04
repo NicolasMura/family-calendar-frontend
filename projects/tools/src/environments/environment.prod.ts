@@ -19,6 +19,7 @@ export const environment = {
   // enabledCache: false, // enable cache management (application + localStorage)
   serviceWorkerScript: 'sw-master.js',
 
+  wsEndpoint: 'ws://family-calendar.nicolasmura.com:8999',
   backendApi: {
     baseUrlAuth:          'https://family-calendar.nicolasmura.com/auth',
     baseUrlUser:          'https://family-calendar.nicolasmura.com' + apiPath + '/users',
