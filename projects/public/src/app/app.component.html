@@ -19,6 +19,9 @@
         </button>
         <!-- <h1 class="example-app-name">{{ (currentMoment$ | async)?.month() }} - V17</h1> -->
         <h1 class="example-app-name">{{ currentMonth | titlecase }} - V17</h1>
+        <button mat-icon-button *ngIf="router.url.split('?')[0] === '/';" (click)="goToToday()">
+          <mat-icon>event</mat-icon>
+        </button>
       </mat-toolbar>
 
       <main [ngClass]="{'isLogged': currentUser$ | async}">

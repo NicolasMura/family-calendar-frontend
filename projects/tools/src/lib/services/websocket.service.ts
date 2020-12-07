@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import * as moment from 'moment';
 import { environment } from 'projects/tools/src/environments/environment';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, takeUntil, tap } from 'rxjs/operators';
 import { Subject, Observable, EMPTY } from 'rxjs';
 import { WebSocketMessage } from 'projects/tools/src/lib/models/websocket-message.model';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
@@ -15,10 +15,11 @@ export const WS_ENDPOINT = environment.wsEndpoint;
 @Injectable({
   providedIn: 'root'
 })
-export class WebSocketService {
+export class WebSocketService implements OnDestroy {
   private socket$: WebSocketSubject<WebSocketMessage> = null as any;
   private messagesSubject$: Subject<CalendarEvent> = new Subject();
   public messages$: Observable<CalendarEvent> = this.messagesSubject$.asObservable();
+  destroyed$ = new Subject();
 
   public connect(): void {
 
@@ -28,7 +29,9 @@ export class WebSocketService {
       this.socket$.pipe(
         tap({
           error: error => console.log(error),
-        }), catchError(_ => EMPTY)
+        }),
+        takeUntil(this.destroyed$),
+        catchError(_ => EMPTY)
       )
       .subscribe((msg: WebSocketMessage) => {
         console.log(msg);
@@ -62,5 +65,9 @@ export class WebSocketService {
 
   close(): void {
     this.socket$.complete();
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
   }
 }

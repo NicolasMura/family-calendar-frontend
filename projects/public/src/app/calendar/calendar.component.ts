@@ -5,8 +5,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
 import { SwiperEvent } from 'ngx-swiper-wrapper/lib/swiper.interfaces';
 import { Observable } from 'rxjs';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { catchError, skip, tap } from 'rxjs/operators';
+import { catchError, first, skip, tap } from 'rxjs/operators';
 import * as moment from 'moment';
 import { UserService } from 'projects/tools/src/lib/services/user.service';
 import { CalendarEventService } from 'projects/tools/src/lib/services/calendar-event.service';
@@ -43,10 +42,6 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     pagination: true
   };
   /**
-   * Boolean that indicates that init_unix_date has already been consumed once
-   */
-  isFirstInitUnixDate = true;
-  /**
    * Slider Swiper current index
    */
   public sliderIndex = 1;
@@ -79,25 +74,30 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     public calendarEventService: CalendarEventService,
     private notificationService: NotificationService,
     private webSocketService: WebSocketService
-  ) {
-    // this.socket$ = new WebSocketSubject('ws://localhost:8999'););
-    // this.webSocketService.connect();
-
-    // this.socket$.subscribe((message) => {
-    //   console.log(message);
-    //   return this.serverMessages.push(message);
-    // }, (err) => console.error(err)
-    // , () => console.log('Completed!')
-    // );
-  }
+  ) { }
 
   ngOnInit(): void {
+    // restore last stored week view from sliderIndex
+    if (this.calendarEventService.sliderIndexSaved) {
+
+      this.sliderIndex = this.calendarEventService.sliderIndexSaved;
+
+      // update url query params
+      const queryParams: Params = { init_unix_date: this.calendarEventService.getCurrentMoment().unix() };
+      this.router.navigate(
+        [],
+        {
+          relativeTo: this.activatedRoute,
+          queryParams,
+          queryParamsHandling: 'merge', // remove to replace all query params by provided
+        });
+    }
+
     // subscribe to current user observable
     this.currentUser$ = this.userService.currentUser$;
 
     // subscribe to WebSocket messages
     this.webSocketService.messages$.pipe(
-      // map((rows: any) => rows),
       tap({
         error: error => console.log('[Live component] Error:', error),
         complete: () => console.log('[Live component] Connection Closed')
@@ -117,66 +117,40 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       });
     }
 
-    this.calendarEventService.currentMoment$
-      .pipe(skip(1))
-      .subscribe((updatedCurrentMoment: moment.Moment) => {
-        // console.log('updatedCurrentMoment', updatedCurrentMoment);
-    });
-
     // Initialize current Week view - Get possible unix date in query params
-    this.activatedRoute.queryParams.subscribe((params: Params) => {
+    this.activatedRoute.queryParams.pipe(first()).subscribe((params: Params) => {
 
-      if (this.isFirstInitUnixDate) {
-        this.isFirstInitUnixDate = false;
+      // populate weeks (if not already done)
+      if (this.calendarEventService.weeksSlides[0].weekNumber === -1) {
+        const initUnixDate = params.init_unix_date;
 
-        // populate weeks (if not already done)
-        if (this.calendarEventService.weeksSlides[0].weekNumber === -1) {
-          const initUnixDate = params.init_unix_date;
-          let initMoment: moment.Moment;
-          let previousMoment: moment.Moment;
-          let nextMoment: moment.Moment;
-
-          if (initUnixDate) {
-            initMoment = moment.unix(Number(initUnixDate));
-          } else {
-            initMoment = moment();
-          }
-
-          previousMoment = initMoment.clone().add(-7, 'day');
-          nextMoment = initMoment.clone().add(7, 'day');
-
-          this.calendarEventService.weeksSlides = [];
-          this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(previousMoment.unix()));
-          this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(initMoment.unix()));
-          this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(nextMoment.unix()));
-
-          // get all events between (current Week - 1) and (current Week +1)
-          console.log('Fetch events for weeks ' + this.calendarEventService.weeksSlides[this.sliderIndex - 1].weekNumber +
-          ' to ' + this.calendarEventService.weeksSlides[this.sliderIndex + 1].weekNumber);
-          const minDate: string = moment(previousMoment).startOf('week').unix().toString();
-          const maxDate: string = moment(nextMoment).endOf('week').unix().toString();
-          this.getEvents(minDate, maxDate);
-        } else {
-          // otherwise just restore last stored week view from sliderIndex
-          this.sliderIndex = this.calendarEventService.sliderIndexSaved;
-        }
-
-        // update currentMoment
-        this.calendarEventService.setCurrentMoment(this.calendarEventService.weeksSlides[this.sliderIndex].days[0].momentObject);
+        this.populateFirstThreeWeeks(Number(initUnixDate));
       }
-
     });
 
-    // TESTS
-    // const monday = moment().startOf('week');
-    // const sunday = moment().endOf('week');
-    // const unixForWeekDebug: number[] = [];
-    // let day: moment.Moment = monday;
-    // while (day <= sunday) {
-    //   unixForWeekDebug.push(day.unix());
-    //   day = day.clone().add(1, 'day');
-    // }
-    // console.log(unixForWeekDebug);
+    // subscribe to currentMoment$ to update view
+    this.calendarEventService.currentMoment$.pipe(skip(1)).subscribe((updatedCurrentMoment: moment.Moment) => {
+
+      // find potential existing slider index that corresponds to updatedCurrentMoment
+      let targetWeek: Week = null as any;
+      this.calendarEventService.weeksSlides.forEach((week: Week, index: number) => {
+        if (week.weekNumber === updatedCurrentMoment.startOf('week').isoWeek()) {
+          targetWeek = week;
+          // week already in weeksSlides
+          if (index !== this.sliderIndex) {
+            this.sliderIndex = index;
+            // next => see onSlideChangeTransitionEnd()
+          }
+        }
+      });
+
+      // week not yet in weeksSlides
+      if (!targetWeek) {
+        // on va la faire simple
+        this.sliderIndex = 1;
+        this.populateFirstThreeWeeks(updatedCurrentMoment.unix());
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -184,6 +158,43 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.swiperDirectiveRef?.update();
     }, 100);
+  }
+
+  /**
+   * @TODO
+   */
+  populateFirstThreeWeeks(unixDate: number): void {
+    let initMoment: moment.Moment;
+    let previousMoment: moment.Moment;
+    let nextMoment: moment.Moment;
+
+    if (unixDate) {
+      initMoment = moment.unix(unixDate);
+    } else {
+      initMoment = moment();
+    }
+
+    previousMoment = initMoment.clone().add(-7, 'day');
+    nextMoment = initMoment.clone().add(7, 'day');
+
+    this.calendarEventService.weeksSlides = [];
+    this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(previousMoment.unix()));
+    this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(initMoment.unix()));
+    this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(nextMoment.unix()));
+
+    // get all events between (current Week - 1) and (current Week +1)
+    console.log(this.sliderIndex);
+    console.log('Fetch events for weeks ' + this.calendarEventService.weeksSlides[this.sliderIndex - 1].weekNumber +
+    ' to ' + this.calendarEventService.weeksSlides[this.sliderIndex + 1].weekNumber);
+    const minDate: string = moment(previousMoment).startOf('week').unix().toString();
+    const maxDate: string = moment(nextMoment).endOf('week').unix().toString();
+    this.getEvents(minDate, maxDate);
+
+    // save current Slider index
+    this.calendarEventService.sliderIndexSaved = this.sliderIndex;
+
+    // update currentMoment
+    this.calendarEventService.setCurrentMoment(this.calendarEventService.weeksSlides[this.sliderIndex].days[0].momentObject);
   }
 
   /**
@@ -203,9 +214,6 @@ export class CalendarComponent implements OnInit, AfterViewInit {
         });
       });
       console.log(this.calendarEventService.weeksSlides);
-
-      // save current Slider index
-      this.calendarEventService.sliderIndexSaved = this.sliderIndex;
     });
   }
 
@@ -213,7 +221,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    * @TODO
    */
   public onIndexChange(index: number): void {
-    // console.log('Swiper index: ', index);
+    // console.log('onIndexChange - Swiper index: ', index);
     // save current Slider index
     this.calendarEventService.sliderIndexSaved = this.sliderIndex;
 
@@ -225,6 +233,8 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    * @TODO
    */
   public onSlideChangeTransitionEnd(event: SwiperEvent): void {
+    // console.log('onSlideChangeTransitionEnd');
+
     // update currentMoment
     this.calendarEventService.setCurrentMoment(this.calendarEventService.weeksSlides[this.sliderIndex].days[0].momentObject);
 
@@ -248,7 +258,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
 
     // reach right end of Weeks Slides: add one more to the right!
     if (this.sliderIndex === this.calendarEventService.weeksSlides.length - 1) {
-      // console.log('reached right end of Weeks Slides: add one more to the right!!');
+      // console.log('reached right end of Weeks Slides: add one more to the right!');
       const nextMoment = initMoment.clone().add(7, 'day');
       newMoment = nextMoment;
       this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(nextMoment.unix()));
@@ -259,6 +269,9 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       const minDate: string = moment(newMoment).startOf('week').unix().toString();
       const maxDate: string = moment(newMoment).endOf('week').unix().toString();
       this.getEvents(minDate, maxDate);
+
+      // save current Slider index
+      this.calendarEventService.sliderIndexSaved = this.sliderIndex;
     }
 
     // update url query params
@@ -302,8 +315,8 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    * - detail view if input is an event + pass event data
    */
   public openEventDetailDialog(input: Day | CalendarEvent, user?: User): void {
-    console.log(input);
-    console.log(user);
+    // console.log(input);
+    // console.log(user);
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = false;
@@ -379,7 +392,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
             updatedDay.events?.find((e: CalendarEvent, indexEv: number) => {
               if (e._id === event._id) {
                 existingEventIndex = indexEv;
-                console.log('existingEventIndex : ', existingEventIndex);
+                // console.log('existingEventIndex : ', existingEventIndex);
                 return true;
               }
               return false;
@@ -388,14 +401,14 @@ export class CalendarComponent implements OnInit, AfterViewInit {
             // update or delete case
             if (Number.isInteger(existingEventIndex)) {
               if (!event._deleted) {
-                console.log('update case => replace event');
+                // console.log('update case => replace event');
                 (updatedDay.events as CalendarEvent[])[existingEventIndex] = event;
               } else {
-                console.log('delete case => remove event');
+                // console.log('delete case => remove event');
                 updatedDay.events?.splice(existingEventIndex, 1);
               }
             } else {
-              console.log('create case => add event');
+              // console.log('create case => add event');
               // create case => update by inserting ev
               if (updatedDay.events) {
                 updatedDay.events.push(event);

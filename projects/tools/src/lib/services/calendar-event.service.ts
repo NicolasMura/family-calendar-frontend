@@ -47,7 +47,7 @@ export class CalendarEventService extends GlobalService {
   /**
    * Saved Slider Swiper current index
    */
-  public sliderIndexSaved = -1;
+  public sliderIndexSaved: number = null as any;
 
   constructor(
     private http: HttpClient,

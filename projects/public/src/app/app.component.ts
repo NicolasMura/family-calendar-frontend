@@ -53,7 +53,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
   // }
 
   constructor(
-    private router: Router,
+    public router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private swUpdate: SwUpdate,
     private snackBar: MatSnackBar,
@@ -158,10 +158,14 @@ export class AppComponent implements OnInit, AfterViewChecked {
     this.authService.logout();
   }
 
+  public goToToday(): void {
+    this.calendarEventService.setCurrentMoment(moment());
+  }
+
   public goToMainCalendar(): void {
-    const navigationExtras: NavigationExtras = {
-      queryParams: { init_unix_date: this.calendarEventService.getCurrentMoment()?.unix() }
-    };
+    // const navigationExtras: NavigationExtras = {
+    //   queryParams: { init_unix_date: this.calendarEventService.getCurrentMoment()?.unix() }
+    // };
     this.router.navigate([CoreConstants.routePath.root]);
   }
 

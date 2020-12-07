@@ -23,7 +23,7 @@ export const environment = {
   // enabledCache: false, // enable cache management (application + localStorage)
   serviceWorkerScript: 'sw-sync.js',
 
-  wsEndpoint: 'ws://localhost:8999',
+  wsEndpoint: 'ws://localhost:3000',
   backendApi: {
     baseUrlAuth:          'http://localhost:3000/auth',
     baseUrlUser:          'http://localhost:3000' + apiPath + '/users',
