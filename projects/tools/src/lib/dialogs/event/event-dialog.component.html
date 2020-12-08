@@ -31,7 +31,7 @@
     <mat-label for="title">Titre du magnifique événement</mat-label>
     <input matInput type="text" formControlName="title" libAutofocus />
     <mat-error *ngIf="errorHandling('title', 'required')">
-      Erreur: champ requis
+      Un événement sans titre, c'est comme un Noël sans marrons glacés
     </mat-error>
   </mat-form-field>
 
@@ -65,18 +65,9 @@
         {{ user.profile.name }}
       </mat-option>
     </mat-select>
-    <mat-error *ngIf="errorHandling('usersEmails', 'required')">
-      Erreur: champ requis
+    <mat-error *ngIf="errorHandling('usersEmails', 'validateArrayNotEmpty')">
+      Mais c'est "qui qui" est concerné par l'événement ?
     </mat-error>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Les gens concernés (native test)</mat-label>
-    <select matNativeControl formControlName="usersEmailsTest" multiple>
-      <option *ngFor="let user of userService.getUsers()" [value]="user.email">
-        {{ user.profile.name }}
-      </option>
-    </select>
   </mat-form-field>
 
   <!-- Reminders -->
@@ -84,7 +75,7 @@
     <mat-label>Rappel(s)</mat-label>
     <mat-select formControlName="reminders" multiple>
       <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
-        {{ user.profile.name }}
+        @TODO
       </mat-option>
     </mat-select>
   </mat-form-field>
@@ -99,17 +90,6 @@
       <mat-option value="myrtille" style="color: rgb(63, 81, 181);">Myrtille</mat-option>
       <mat-option value="sauge" style="color: rgb(51, 182, 121);">Sauge</mat-option>
     </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Couleur (native test)</mat-label>
-    <select matNativeControl formControlName="colorTest">
-      <option value="blue" style="color: rgb(121, 134, 203);">Couleur par défaut</option>
-      <option value="tomate" style="color: rgb(213, 0, 0);">Tomate</option>
-      <option value="banane" style="color: rgb(246, 191, 38);">Banane</option>
-      <option value="myrtille" style="color: rgb(63, 81, 181);">Myrtille</option>
-      <option value="sauge" style="color: rgb(51, 182, 121);">Sauge</option>
-    </select>
   </mat-form-field>
 
   <mat-form-field appearance="fill">

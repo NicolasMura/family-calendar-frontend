@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as moment from 'moment';
@@ -18,7 +18,7 @@ export interface EventData  {
   existingEvent?: CalendarEvent;
   newEvent?: {
     day: Day,
-    user: User
+    user?: User
   };
 }
 
@@ -90,7 +90,7 @@ export class EventDialogComponent implements OnInit {
       event.title = '';
       event.startDate = this.data.newEvent.day.momentObject.unix().toString();
       event.endDate = this.data.newEvent.day.momentObject.clone().add(1, 'hour').unix().toString();
-      event.usersEmails = [this.data.newEvent.user.email];
+      event.usersEmails = this.data.newEvent.user ? [this.data.newEvent.user.email] : [];
       event.reminders = [];
       event.color = 'blue';
       event.category = '';
@@ -115,14 +115,12 @@ export class EventDialogComponent implements OnInit {
     // build form
     this.eventForm = new FormGroup({
       title: new FormControl(event.title, Validators.required),
-      usersEmails: new FormControl(event.usersEmails, Validators.minLength(1)),
+      usersEmails: new FormControl(event.usersEmails, [this.validateArrayNotEmpty]),
       reminders: new FormControl(event.reminders),
       color: new FormControl(event.color),
       category: new FormControl(event.category),
       standardStartDate: new FormControl(this.standardStartDate), // standard Date format for DateTime Picker
-      standardEndDate: new FormControl(this.standardEndDate),  // standard Date format for DateTime Picker
-      usersEmailsTest: new FormControl(event.usersEmails),
-      colorTest: new FormControl(event.color)
+      standardEndDate: new FormControl(this.standardEndDate)  // standard Date format for DateTime Picker
     });
   }
 
@@ -231,5 +229,18 @@ export class EventDialogComponent implements OnInit {
    */
   public errorHandling = (control: string, error: string) => {
     return this.eventForm?.controls[control]?.hasError(error);
+  }
+
+  /**
+   * Custom validator for emails list
+   * Error is returned if email list is empty
+   */
+  public validateArrayNotEmpty: ValidatorFn = (control: AbstractControl): {[key: string]: any} | null => {
+    if (control.value && control.value.length === 0) {
+      return {
+        validateArrayNotEmpty: { valid: false }
+      };
+    }
+    return null;
   }
 }

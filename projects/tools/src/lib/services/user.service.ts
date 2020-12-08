@@ -29,24 +29,37 @@ export class UserService extends GlobalService {
    */
   readonly currentUser$: Observable<User> = this.currentUser.asObservable();
   /**
-   * Users who are members of family
+   * Users who are members of a given family
    */
-  // public users: User[] | any[] = [1, 2, 3];
   public users: User[] = [
-    new User('', '', { name: '' }, ''),
-    new User('', '', { name: '' }, ''),
-    new User('', '', { name: '' }, '')
+    new User('', '', { name: '', isChild: false }, undefined, ''),
+    new User('', '', { name: '', isChild: false }, undefined, ''),
+    new User('', '', { name: '', isChild: false }, undefined, '')
   ];
+  /**
+   * Users as parents + children group
+   */
+  public familyUsers: User[] = [
+    new User('', '', { name: '', isChild: false }, undefined, ''),
+    new User('', '', { name: '', isChild: false }, undefined, ''),
+    new User('', '', { name: 'Schtroumpfs' }, undefined, '')
+  ];
+  /**
+   * Children emails for display convenience
+   */
+  public childrenEmails: string[] = [];
 
   /**
    * Variables representing a part of application state, in a Redux inspired way
    */
   private userStore: {
     currentUser: User,
-    users: User[]
+    users: User[],
+    familyUsers: User[]
   } = {
     currentUser: null as any,
-    users: []
+    users: [],
+    familyUsers: []
   };
 
   constructor(
@@ -75,6 +88,7 @@ export class UserService extends GlobalService {
         userDecoded.mobile || '',
         userDecoded.email,
         userDecoded.profile,
+        undefined,
         userDecoded._id
       );
     }
@@ -118,10 +132,28 @@ export class UserService extends GlobalService {
             user.mobile || '',
             user.email,
             user.profile,
+            undefined,
             user._id
           ));
+
+          this.familyUsers = [];
+          const childs: User[] = [];
+          usersWellFormatted.forEach((user: User) => {
+            if (!user.profile.isChild) {
+              this.familyUsers.push(user);
+            } else {
+              childs.push(user);
+              this.childrenEmails.push(user.email);
+            }
+          });
+          // on pousse les schtroumpfs dans le dernier user
+          this.familyUsers.push(new User('0000', 'child@child.child', { name: 'Schtroumpfs' }, childs, ''));
+
           this.users = usersWellFormatted;
           this.userStore.users = usersWellFormatted;
+          this.userStore.familyUsers = this.familyUsers;
+          console.log(this.familyUsers);
+
           return usersWellFormatted;
         }),
         catchError(error => this.handleError(error))

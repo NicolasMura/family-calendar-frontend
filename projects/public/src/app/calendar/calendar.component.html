@@ -30,9 +30,15 @@
   </div>
 </div> -->
 
-<div class="users" style="display: flex; height: 40px; background-color: red;">
+<!-- <div class="users" style="display: flex; height: 40px; background-color: red;">
   <div style="flex: 1;"></div>
   <div *ngFor="let user of userService.users" style="flex: 1;">
+    {{ user.profile.name }}
+  </div>
+</div> -->
+<div class="users" style="display: flex; height: 40px; background-color: red;">
+  <div style="flex: 1 1 0px;"></div>
+  <div *ngFor="let user of userService.familyUsers" style="flex: 1 1 0px;">
     {{ user.profile.name }}
   </div>
 </div>
@@ -46,15 +52,36 @@
   <div *ngFor="let weekSlide of calendarEventService.weeksSlides" class="swiper-slide" style="display: flex; flex-direction: column;">
     <div style="position: absolute; left: 75px;">{{ weekSlide.weekNumber }}</div>
     <div class="week" style="height: 100%; background-color: cyan; display: flex; flex-direction: column; justify-content: space-around;">
-      <div class="day" *ngFor="let day of weekSlide.days" style="flex: calc(1/7); display: flex; outline: 1px solid brown;">
-        <div class="label" style="flex: 1;">
+      <div class="day" *ngFor="let day of weekSlide.days" style="height: calc(100%/7); flex: calc(1/7) 1 0px; display: flex; background-color: brown;">
+        <div class="label" style="flex: 1 1 0px;" (dblclick)="openEventDetailDialog(day);">
           {{ day.nb }}<br>{{ day.label }}
         </div>
-        <div class="events" *ngFor="let user of userService.users" (dblclick)="openEventDetailDialog(day, user);" style="flex: 1; outline: 1px solid cornflowerblue;">
-          <div class="events" *ngFor="let event of day.events" (press)="testPress($event)" (click)="openEventDetailDialog(event);" style="background-color: yellowgreen;">
+        <!-- <div class="events" *ngFor="let user of userService.users" (dblclick)="openEventDetailDialog(day, user);" style="flex: 1; outline: 1px solid cornflowerblue;">
+          <div class="events" *ngFor="let event of day.events" (click)="openEventDetailDialog(event);" style="background-color: yellowgreen;">
             <span *ngIf="event.usersEmails.includes(user.email)">{{ event.title }}</span>
           </div>
+        </div> -->
+        <div class="events" *ngFor="let user of userService.familyUsers" (dblclick)="openEventDetailDialog(day, user);" style="flex: 1 1 0px; display: flex; flex-direction: column; overflow: hidden; outline: 2px solid grey; background-color: cornflowerblue;">
+          <div class="event" *ngFor="let event of day.events"
+               (click)="openEventDetailDialog(event);"
+               style="flex: 1; width: 95%; max-height: 22px; margin-bottom: 3px; border-radius: 5px; background-color: yellowgreen;"
+               [style.display]="((!user.profile.isChild && event.usersEmails.includes(user.email)) || (user.schtroumpfs && isAnyChildInEvent(event))) ? 'block' : 'none'">
+            <div *ngIf="!user.profile.isChild && event.usersEmails.includes(user.email)" style="margin-bottom: 3px; overflow: hidden; color: red;" [style.max-height]="event.usersEmails.includes(user.email) ? '20px' : '0px'">
+              <span style="white-space: nowrap;">{{ event.title }}</span>
+            </div>
+            <div *ngIf="user.schtroumpfs && isAnyChildInEvent(event)" style="margin-bottom: 3px; overflow: hidden; color: blue;">
+              <span style="white-space: nowrap;">{{ event.title }}</span>
+            </div>
+          </div>
         </div>
+        <!-- <div style="flex: 3 1 0px; display: flex; flex-direction: column; outline: 1px solid cornflowerblue;">
+          <div *ngFor="let event of day.events" style="display: flex; outline: 1px solid green;">
+            <div class="events" *ngFor="let user of userService.familyUsers" style="flex: 1 1 0px; outline: 2px solid cornflowerblue;">
+              <span *ngIf="!user.profile.isChild && event.usersEmails.includes(user.email)" (click)="openEventDetailDialog(event, user);" style="background-color: yellowgreen; color: red;">{{ event.title }}</span>
+              <span *ngIf="user.schtroumpfs && isAnyChildInEvent(event)" (click)="openEventDetailDialog(event, user);" style="background-color: yellowgreen; color: blue;">{{ event.title }}</span>
+            </div>
+          </div>
+        </div> -->
       </div>
     </div>
   </div>

@@ -38,7 +38,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     keyboard: true,
     mousewheel: false,
     scrollbar: false,
-    navigation: true,
+    // navigation: true,
     pagination: true
   };
   /**
@@ -112,9 +112,9 @@ export class CalendarComponent implements OnInit, AfterViewInit {
 
     // get all family members (if not already done)
     if (this.userService.users[0]._id === '') {
-      this.userService.getAllUsers().subscribe((users: User[]) => {
-        console.log(users);
-      });
+      // this.userService.getAllUsers().subscribe((users: User[]) => {
+      //   console.log(users);
+      // });
     }
 
     // Initialize current Week view - Get possible unix date in query params
@@ -183,7 +183,6 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     this.calendarEventService.weeksSlides.push(this.constructWeeksSlides(nextMoment.unix()));
 
     // get all events between (current Week - 1) and (current Week +1)
-    console.log(this.sliderIndex);
     console.log('Fetch events for weeks ' + this.calendarEventService.weeksSlides[this.sliderIndex - 1].weekNumber +
     ' to ' + this.calendarEventService.weeksSlides[this.sliderIndex + 1].weekNumber);
     const minDate: string = moment(previousMoment).startOf('week').unix().toString();
@@ -200,20 +199,37 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   /**
    * @TODO
    */
-  public getEvents(minDate?: string, maxDate?: string): void {
-    this.calendarEventService.getAllEvents(minDate, maxDate).subscribe((events: CalendarEvent[]) => {
-      console.log(events);
-
-      events.forEach((event: CalendarEvent) => {
-        this.calendarEventService.weeksSlides.forEach((w: Week) => {
-          w.days.forEach((d: Day) => {
-            if (moment.unix(Number(event.startDate)).format('DDD') === d.momentObject.format('DDD')) {
-              d.events?.push(event);
-            }
-          });
+  public async getEvents(minDate?: string, maxDate?: string): Promise<void> {
+    // First promise returns an array after a delay
+    const getUsers = () => {
+      return new Promise((resolve, reject) => {
+        return this.userService.getAllUsers().subscribe((users: User[]) => {
+          resolve(users);
         });
       });
-      console.log(this.calendarEventService.weeksSlides);
+    };
+
+    if (this.userService.users[0]._id === '') {
+      console.log('await getUsers()...');
+      await getUsers();
+    }
+
+    return new Promise((resolve, reject) => {
+      this.calendarEventService.getAllEvents(minDate, maxDate).subscribe((events: CalendarEvent[]) => {
+        console.log(events);
+        console.log(this.userService.childrenEmails);
+
+        events.forEach((event: CalendarEvent) => {
+          this.calendarEventService.weeksSlides.forEach((w: Week) => {
+            w.days.forEach((d: Day) => {
+              if (moment.unix(Number(event.startDate)).format('DDD') === d.momentObject.format('DDD')) {
+                d.events?.push(event);
+              }
+            });
+          });
+        });
+        console.log(this.calendarEventService.weeksSlides);
+      });
     });
   }
 
@@ -342,7 +358,8 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       const data: EventData = {
         newEvent: {
           day: input,
-          user: user as User
+          user: user ? user : this.userService.getCurrentUser()
+          // user: user ? user : undefined
         }
       };
       dialogConfig.data = data;
@@ -438,8 +455,11 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     return isEventInWeek;
   }
 
-  testPress(event: any): void {
-    console.log(event);
+  /**
+   * Returns true if any family child is in @param event, false otherwise
+   */
+  public isAnyChildInEvent(event: CalendarEvent): boolean {
+    return event.usersEmails.some((email: string) => this.userService.childrenEmails.includes(email));
   }
 
   // tests WS
