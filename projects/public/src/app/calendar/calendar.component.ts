@@ -15,8 +15,9 @@ import { User } from 'projects/tools/src/lib/models/user.model';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
 import { Week } from 'projects/tools/src/lib/models/week.model';
 import { Day } from 'projects/tools/src/lib/models/day.model';
-import { EventData, EventDialogComponent } from 'projects/tools/src/lib/dialogs/event/event-dialog.component';
 import { WebSocketMessage } from 'projects/tools/src/lib/models/websocket-message.model';
+import { EventData, EventDialogComponent } from 'projects/tools/src/lib/dialogs/event/event-dialog.component';
+import { ShowMoreEventsData, ShowMoreEventsDialogComponent } from 'projects/tools/src/lib/dialogs/event/show-more-events-dialog.component';
 
 
 @Component({
@@ -57,6 +58,10 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    * Reference to event dialog
    */
   public eventDialogRef: MatDialogRef<EventDialogComponent> | undefined;
+  /**
+   * Reference to show more events dialog
+   */
+  public showMoreEventsDialogRef: MatDialogRef<ShowMoreEventsDialogComponent> | undefined;
 
   // tests WS
   // public serverMessages = new Array<Message>();
@@ -358,8 +363,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       const data: EventData = {
         newEvent: {
           day: input,
-          user: user ? user : this.userService.getCurrentUser()
-          // user: user ? user : undefined
+          users: user ? (user.schtroumpfs ? user.schtroumpfs : [user]) : [this.userService.getCurrentUser()]
         }
       };
       dialogConfig.data = data;
@@ -460,6 +464,58 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    */
   public isAnyChildInEvent(event: CalendarEvent): boolean {
     return event.usersEmails.some((email: string) => this.userService.childrenEmails.includes(email));
+  }
+
+  /**
+   * Returns number of @param user's events in a given @param day
+   */
+  public getDayEventsForUser(day: Day, user: User): number {
+    let userEventsCount = 0;
+
+    day.events?.forEach((event: CalendarEvent) => {
+      if (user.schtroumpfs) {
+        if (this.isAnyChildInEvent(event)) {
+          userEventsCount++;
+        }
+      } else {
+        if (event.usersEmails.includes(user.email)) {
+          userEventsCount++;
+        }
+      }
+    });
+
+    return userEventsCount;
+  }
+
+  /**
+   * Show more events modal for a given day / user
+   */
+  public showMoreEvents(day: Day, user: User): void {
+    console.log(day);
+    console.log(user);
+
+    // console.log(input);
+    // console.log(user);
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = false;
+    dialogConfig.id = 'modal-openShowMoreEventsDialog';
+    // dialogConfig.maxWidth = '100vw';
+    // dialogConfig.maxHeight = '100vh';
+    // dialogConfig.height = '100%';
+    // dialogConfig.width = '100%';
+    dialogConfig.panelClass = 'custom-theme'; // @TODO
+
+    const data: ShowMoreEventsData = {
+      day,
+      user
+    };
+    dialogConfig.data = data;
+
+    this.showMoreEventsDialogRef = this.dialog.open(ShowMoreEventsDialogComponent, dialogConfig);
+    this.showMoreEventsDialogRef.afterClosed().subscribe((todo: any) => {
+      console.log(todo);
+    });
   }
 
   // tests WS

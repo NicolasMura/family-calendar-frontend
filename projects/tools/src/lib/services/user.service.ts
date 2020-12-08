@@ -42,7 +42,7 @@ export class UserService extends GlobalService {
   public familyUsers: User[] = [
     new User('', '', { name: '', isChild: false }, undefined, ''),
     new User('', '', { name: '', isChild: false }, undefined, ''),
-    new User('', '', { name: 'Schtroumpfs' }, undefined, '')
+    new User('', '', { name: 'Schtroumpfs', isChild: true }, undefined, '')
   ];
   /**
    * Children emails for display convenience
@@ -147,7 +147,7 @@ export class UserService extends GlobalService {
             }
           });
           // on pousse les schtroumpfs dans le dernier user
-          this.familyUsers.push(new User('0000', 'child@child.child', { name: 'Schtroumpfs' }, childs, ''));
+          this.familyUsers.push(new User('0000', 'child@child.child', { name: 'Schtroumpfs', isChild: true }, childs, ''));
 
           this.users = usersWellFormatted;
           this.userStore.users = usersWellFormatted;

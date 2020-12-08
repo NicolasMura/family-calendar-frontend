@@ -59,7 +59,7 @@
 
   <!-- Users Emails -->
   <mat-form-field appearance="fill">
-    <mat-label>Les gens concernés</mat-label>
+    <mat-label>Les parents / schtroumpfs concernés</mat-label>
     <mat-select formControlName="usersEmails" multiple>
       <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
         {{ user.profile.name }}

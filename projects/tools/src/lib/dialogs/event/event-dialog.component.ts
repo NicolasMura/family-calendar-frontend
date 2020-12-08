@@ -18,7 +18,7 @@ export interface EventData  {
   existingEvent?: CalendarEvent;
   newEvent?: {
     day: Day,
-    user?: User
+    users?: User[]
   };
 }
 
@@ -90,7 +90,7 @@ export class EventDialogComponent implements OnInit {
       event.title = '';
       event.startDate = this.data.newEvent.day.momentObject.unix().toString();
       event.endDate = this.data.newEvent.day.momentObject.clone().add(1, 'hour').unix().toString();
-      event.usersEmails = this.data.newEvent.user ? [this.data.newEvent.user.email] : [];
+      event.usersEmails = this.data.newEvent.users ? this.data.newEvent.users.map((user: User) => user.email) : [];
       event.reminders = [];
       event.color = 'blue';
       event.category = '';
@@ -148,25 +148,27 @@ export class EventDialogComponent implements OnInit {
    * Save event
    */
   public save(): void {
-    this.submitLoadingSpinner = true;
-    const event = new CalendarEvent(
-      this.eventForm.get('title')?.value,
-      // this.eventForm.get('startDate')?.value,
-      this.unixStartDate as string,
-      this.unixEndDate as string,
-      this.eventForm.get('usersEmails')?.value,
-      this.eventForm.get('reminders')?.value,
-      this.eventForm.get('color')?.value,
-      this.eventForm.get('category')?.value,
-      moment.unix(Number(this.unixStartDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-      moment.unix(Number(this.unixEndDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-      this.data.existingEvent ? this.data.existingEvent._id : ''
-    );
+    if (this.eventForm.valid) {
+      this.submitLoadingSpinner = true;
+      const event = new CalendarEvent(
+        this.eventForm.get('title')?.value,
+        // this.eventForm.get('startDate')?.value,
+        this.unixStartDate as string,
+        this.unixEndDate as string,
+        this.eventForm.get('usersEmails')?.value,
+        this.eventForm.get('reminders')?.value,
+        this.eventForm.get('color')?.value,
+        this.eventForm.get('category')?.value,
+        moment.unix(Number(this.unixStartDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+        moment.unix(Number(this.unixEndDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+        this.data.existingEvent ? this.data.existingEvent._id : ''
+      );
 
-    if (this.data.existingEvent) {
-      this.update(event);
-    } else {
-      this.create(event);
+      if (this.data.existingEvent) {
+        this.update(event);
+      } else {
+        this.create(event);
+      }
     }
   }
 
@@ -174,7 +176,8 @@ export class EventDialogComponent implements OnInit {
    * Create new event
    */
   public create(event: CalendarEvent): void {
-    this.calendarEventService.createEvent(event)
+    if (this.eventForm.valid) {
+      this.calendarEventService.createEvent(event)
       .subscribe((newEvent: CalendarEvent) => {
         this.submitLoadingSpinner = false;
         this.notificationService.sendNotification('Événement enregistré !');
@@ -183,38 +186,43 @@ export class EventDialogComponent implements OnInit {
         console.error(error);
         this.submitLoadingSpinner = false;
       });
+    }
   }
 
   /**
    * Update existing event
    */
   public update(event: CalendarEvent): void {
-    console.log('event to update :', event);
-    this.calendarEventService.updateEvent(event)
-      .subscribe((updatedEvent: CalendarEvent) => {
-        this.submitLoadingSpinner = false;
-        this.notificationService.sendNotification('Événement mis à jour !');
-        this.eventDialogRef.close(updatedEvent);
-      }, error => {
-        console.error(error);
-        this.submitLoadingSpinner = false;
-      });
+    if (this.eventForm.valid) {
+      console.log('event to update :', event);
+      this.calendarEventService.updateEvent(event)
+        .subscribe((updatedEvent: CalendarEvent) => {
+          this.submitLoadingSpinner = false;
+          this.notificationService.sendNotification('Événement mis à jour !');
+          this.eventDialogRef.close(updatedEvent);
+        }, error => {
+          console.error(error);
+          this.submitLoadingSpinner = false;
+        });
+    }
   }
 
   /**
    * Delete existing event
    */
   public remove(): void {
-    console.log('event to remove :', this.data.existingEvent);
-    this.calendarEventService.deleteEventById(this.data.existingEvent?._id as string)
-      .subscribe((deletedEvent: CalendarEvent) => {
-        this.submitLoadingSpinner = false;
-        this.notificationService.sendNotification('Événement supprimé !');
-        this.eventDialogRef.close(deletedEvent);
-      }, error => {
-        console.error(error);
-        this.submitLoadingSpinner = false;
-      });
+    if (this.eventForm.valid) {
+      console.log('event to remove :', this.data.existingEvent);
+      this.calendarEventService.deleteEventById(this.data.existingEvent?._id as string)
+        .subscribe((deletedEvent: CalendarEvent) => {
+          this.submitLoadingSpinner = false;
+          this.notificationService.sendNotification('Événement supprimé !');
+          this.eventDialogRef.close(deletedEvent);
+        }, error => {
+          console.error(error);
+          this.submitLoadingSpinner = false;
+        });
+    }
   }
 
   /**

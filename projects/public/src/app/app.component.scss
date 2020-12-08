@@ -14,7 +14,7 @@
 
     .mat-sidenav-content {
       height: 100vh;
-      background-color: yellow;
+      // background-color: yellow;
 
       .mat-toolbar {
         position: fixed;
@@ -24,7 +24,7 @@
       }
 
       main {
-        background-color: bisque;
+        // background-color: bisque;
         height: 100%;
 
         &.isLogged {

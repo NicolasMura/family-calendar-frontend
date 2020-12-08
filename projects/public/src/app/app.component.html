@@ -9,6 +9,7 @@
         <a mat-list-item (click)="sidenav.toggle(); goToSettings();">Settings</a>
         <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.askForNotificationPermission()">Ask for Push Notification Permission</a>
         <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.displayConfirmNotification()">Test Push Notification</a>
+        <a mat-list-item >V17</a>
       </mat-nav-list>
     </mat-sidenav>
 
@@ -17,8 +18,12 @@
         <button mat-icon-button (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
-        <!-- <h1 class="example-app-name">{{ (currentMoment$ | async)?.month() }} - V17</h1> -->
-        <h1 class="example-app-name">{{ currentMonth | titlecase }} - V17</h1>
+        <!-- <h1>{{ (currentMoment$ | async)?.month() }} - V17</h1> -->
+        <h1>{{ currentMonth | titlecase }} - <span *ngIf="weekNumber">S{{ weekNumber }}</span></h1>
+        <span style="flex: 1 1 auto;"></span>
+        <button mat-icon-button (click)="refreshApp()">
+          <mat-icon>refresh</mat-icon>
+        </button>
         <button mat-icon-button *ngIf="router.url.split('?')[0] === '/';" (click)="goToToday()">
           <mat-icon>event</mat-icon>
         </button>

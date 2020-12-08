@@ -41,6 +41,10 @@ export class AppComponent implements OnInit, AfterViewChecked {
    */
   currentMonth = '';
   /**
+   * Current week number
+   */
+  weekNumber = 0;
+  /**
    * IBuildInfo interface and typings
    */
   // interface IBuildInfo {
@@ -146,6 +150,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
       .pipe(skip(1))
       .subscribe((updatedCurrentMoment: moment.Moment) => {
         this.currentMonth = updatedCurrentMoment.format('MMMM');
+        this.weekNumber = updatedCurrentMoment.startOf('week').isoWeek();
       });
   }
 
@@ -171,6 +176,10 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   public goToSettings(): void {
     this.router.navigate([CoreConstants.routePath.settings]);
+  }
+
+  public refreshApp(): void {
+    window.location.reload();
   }
 }
 

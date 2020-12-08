@@ -1,0 +1,17 @@
+<button mat-icon-button color="primary"
+        (click)=cancel()>
+  <mat-icon>close</mat-icon>
+</button>
+
+<div>
+  <div>{{ data.day.label }} {{ data.day.nb }}</div>
+    <!-- Events (filtered by user) loop -->
+    <div class="event" *ngFor="let event of data.day.events | eventsFilter:{user: data.user, childrenEmails: userService.childrenEmails};"
+         (click)="openEventDetailDialog(event);"
+         style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px; background-color: rgb(63, 81, 181);">
+    <div style="width: calc(100% - 10px); margin: 0 auto; overflow: hidden;"
+         [style.color]="!data.user.profile.isChild ? 'white' : 'darkorange'">
+      <span style="white-space: nowrap;">{{ event.title }}</span>
+    </div>
+  </div>
+</div>
