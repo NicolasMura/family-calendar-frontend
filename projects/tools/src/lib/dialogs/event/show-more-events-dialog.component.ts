@@ -42,10 +42,10 @@ export class ShowMoreEventsDialogComponent implements OnInit {
   }
 
   /**
-   * Close dialog and open event dialog for update
+   * Close dialog with selected event
    */
   public openEventDetailDialog(event: CalendarEvent): void {
-    console.log(event);
+    this.eventDialogRef.close(event);
   }
 
   /**

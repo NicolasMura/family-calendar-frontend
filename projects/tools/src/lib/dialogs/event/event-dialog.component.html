@@ -1,6 +1,6 @@
 <button mat-icon-button color="primary"
         (click)=cancel()>
-  <mat-icon>close</mat-icon>
+  <mat-icon>arrow_back</mat-icon>
 </button>
 
 <button mat-icon-button color="primary" aria-label="close"
@@ -39,8 +39,8 @@
   <mat-form-field appearance="fill">
     <mat-label>Début</mat-label>
     <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
-           formControlName="standardStartDate"
-           (dateChange)="onStartDateChange($any($event))">
+          formControlName="standardStartDate"
+          (dateChange)="onStartDateChange($any($event))">
     <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
     <ngx-mat-datetime-picker #picker [enableMeridian]="false"></ngx-mat-datetime-picker>
     <mat-error>{{ eventForm.get('standardStartDate')?.errors | json }}</mat-error>
@@ -50,8 +50,8 @@
   <mat-form-field appearance="fill">
     <mat-label>Fin</mat-label>
     <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choisir une date"
-           formControlName="standardEndDate"
-           (dateChange)="onEndDateChange($any($event))">
+          formControlName="standardEndDate"
+          (dateChange)="onEndDateChange($any($event))">
     <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
     <ngx-mat-datetime-picker #picker2 [enableMeridian]="false"></ngx-mat-datetime-picker>
     <mat-error>{{ eventForm.get('standardEndDate')?.errors | json }}</mat-error>

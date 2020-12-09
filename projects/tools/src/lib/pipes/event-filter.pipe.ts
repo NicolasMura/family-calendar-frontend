@@ -11,7 +11,7 @@ import { User } from 'projects/tools/src/lib/models/user.model';
   pure: false
 })
 export class EventsFilterPipe implements PipeTransform {
-transform(events: CalendarEvent[], filter: {user: User, childrenEmails: string[]}): any {
+transform(events: CalendarEvent[] | undefined, filter: { user: User, childrenEmails: string[] }): any {
   if (!events || !filter) {
     return events;
   }

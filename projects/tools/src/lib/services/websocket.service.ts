@@ -2,36 +2,73 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import * as moment from 'moment';
 import { environment } from 'projects/tools/src/environments/environment';
-import { catchError, takeUntil, tap } from 'rxjs/operators';
-import { Subject, Observable, EMPTY } from 'rxjs';
+import { catchError, delay, retryWhen, takeUntil, tap } from 'rxjs/operators';
+import { Subject, Observable, EMPTY, BehaviorSubject } from 'rxjs';
 import { WebSocketMessage } from 'projects/tools/src/lib/models/websocket-message.model';
 import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.model';
 export const WS_ENDPOINT = environment.wsEndpoint;
-
+const RECONNECT_INTERVAL = 5000;
 
 /**
- * https://javascript-conference.com/blog/real-time-in-angular-a-journey-into-websocket-and-rxjs/
+ * https://javascript-conference.com/blog/real-time-in-angular-a-journey-into-websocket-and-rxjs
  */
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService implements OnDestroy {
-  private socket$: WebSocketSubject<WebSocketMessage> = null as any;
-  private messagesSubject$: Subject<CalendarEvent> = new Subject();
-  public messages$: Observable<CalendarEvent> = this.messagesSubject$.asObservable();
+  private socket$: WebSocketSubject<WebSocketMessage> = undefined as any;
+  /**
+   * Private websocket message, as a subject
+   * Nobody outside the WebSocketService should have access to this Subject
+   */
+  private messageSubject: Subject<CalendarEvent> = new Subject();
+  /**
+   * Expose the observable$ part of the messageSubject subject (read only stream)
+   */
+  public readonly message$: Observable<CalendarEvent> = this.messageSubject.asObservable();
   destroyed$ = new Subject();
 
-  public connect(): void {
+  /**
+   * True if WebSocket succesfully reconnect after lost, which means that we must fetch events again
+   */
+  needToFetchEvents = false;
+  /**
+   * Private needToFetchEvents boolean, as a subject
+   * Nobody outside the WebSocketService should have access to this BehaviorSubject
+   * True if WebSocket succesfully reconnect after lost, which means that we must fetch events again
+   */
+  private needToFetchEventsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  /**
+   * Expose the observable$ part of the needToFetchEvents subject (read only stream)
+   */
+  public readonly needToFetchEvents$: Observable<boolean> = this.needToFetchEventsSubject.asObservable();
+
+  public connect(cfg: { reconnect: boolean } = { reconnect: false }): void {
 
     if (!this.socket$ || this.socket$.closed) {
-      this.socket$ = this.getNewWebSocket();
       console.log(this.socket$);
+      this.socket$ = this.getNewWebSocket();
       this.socket$.pipe(
+        retryWhen(errors =>
+          errors.pipe(
+            tap(err => {
+              console.error('Got error', err);
+              console.log('[WebSocketService] (connect()) Try to reconnect');
+            }),
+            delay(RECONNECT_INTERVAL)
+          )
+        ),
         tap({
-          error: error => console.log(error),
+          error: error => {
+            console.error('Socket error');
+            console.log(error);
+          },
         }),
         takeUntil(this.destroyed$),
-        catchError(_ => EMPTY)
+        catchError(error => {
+          console.log('[WebSocketService] catchError:', error);
+          return EMPTY;
+        })
       )
       .subscribe((msg: WebSocketMessage) => {
         console.log(msg);
@@ -49,14 +86,35 @@ export class WebSocketService implements OnDestroy {
             msg.data.content._id,
             msg.data.content._deleted
           );
-          this.messagesSubject$.next(eventWellFormatted);
+          this.messageSubject.next(eventWellFormatted);
         }
       });
     }
   }
 
   private getNewWebSocket(): WebSocketSubject<WebSocketMessage> {
-    return webSocket(WS_ENDPOINT);
+    console.log('getNewWebSocket() : ', WS_ENDPOINT);
+    return webSocket({
+      url: WS_ENDPOINT,
+      openObserver: {
+        next: () => {
+          console.log('[WebSocketService (getNewWebSocket())]: connection opened');
+          if (this.needToFetchEvents) {
+            console.log('Reconnexion réussie => récupération des events');
+            this.needToFetchEventsSubject.next(true);
+          } else {
+            console.log('Connexion réussie => pas besoin de récupérer des events');
+            this.needToFetchEvents = true;
+          }
+        }
+      },
+      // intercepts the closure event
+      closeObserver: {
+        next: () => {
+          console.log('[WebSocketService (getNewWebSocket())]: connection closed');
+        }
+      },
+    });
   }
 
   sendMessage(msg: WebSocketMessage): void {
@@ -69,5 +127,6 @@ export class WebSocketService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }

@@ -5,11 +5,11 @@
       <mat-nav-list *ngIf="currentUser$ | async">
         <a mat-list-item (click)="sidenav.toggle(); logout()">Logout</a>
         <a mat-list-item (click)="sidenav.toggle(); goToMainCalendar();">Semaine familiale</a>
-        <a mat-list-item (click)="sidenav.toggle();">Agenda (soon...)</a>
-        <a mat-list-item (click)="sidenav.toggle(); goToSettings();">Settings</a>
+        <a mat-list-item (click)="sidenav.toggle();">Mois familial (soon...)</a>
+        <a mat-list-item (click)="sidenav.toggle(); goToSettings();">Settings (soon...)</a>
         <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.askForNotificationPermission()">Ask for Push Notification Permission</a>
         <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.displayConfirmNotification()">Test Push Notification</a>
-        <a mat-list-item >V17</a>
+        <a mat-list-item disabled>V17</a>
       </mat-nav-list>
     </mat-sidenav>
 
