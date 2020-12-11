@@ -23,6 +23,13 @@
 $roboto-font-path: "~roboto-fontface/fonts";
 @import "~roboto-fontface/css/roboto/sass/roboto-fontface";
 
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 html, body {
   height: 100%;
 }
@@ -84,4 +91,37 @@ main {
 /* tooltips */
 .mat-tooltip {
   font-size: 14px!important;
+}
+
+/* colors */
+.bg.blue {
+  background-color: rgb(121, 134, 203);
+}
+.bg.tomate {
+  background-color: rgb(213, 0, 0);
+}
+.bg.banane {
+  background-color: rgb(246, 191, 38);
+}
+.bg.myrtille {
+  background-color: rgb(63, 81, 181);
+}
+.bg.sauge {
+  background-color: rgb(51, 182, 121);
+}
+
+.bg.hoverable.blue:hover {
+  background-color: lighten(rgb(121, 134, 203), 10%);
+}
+.bg.hoverable.tomate:hover {
+  background-color: lighten(rgb(213, 0, 0), 10%);
+}
+.bg.hoverable.banane:hover {
+  background-color: lighten(rgb(246, 191, 38), 10%);
+}
+.bg.hoverable.myrtille:hover {
+  background-color: lighten(rgb(63, 81, 181), 10%);
+}
+.bg.hoverable.sauge:hover {
+  background-color: lighten(rgb(51, 182, 121), 10%);
 }

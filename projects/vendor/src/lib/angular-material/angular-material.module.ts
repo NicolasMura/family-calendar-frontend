@@ -26,7 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-// import { MatNativeDateModule , MatRippleModule} from '@angular/material/core';
+import { MatNativeDateModule , MatRippleModule } from '@angular/material/core';
 // import { MatPaginatorModule } from '@angular/material/paginator';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -34,7 +34,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatSliderModule } from '@angular/material/slider';
-// import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 // import { MatSortModule } from '@angular/material/sort';
 // import { MatTableModule } from '@angular/material/table';
@@ -80,11 +80,11 @@ import {
     // MatProgressBarModule,
     // MatProgressSpinnerModule,
     // MatRadioModule,
-    // MatRippleModule,
+    MatRippleModule,
     MatSelectModule,
     MatSidenavModule,
     // MatSliderModule,
-    // MatSlideToggleModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     // MatSortModule,
     // MatTableModule,

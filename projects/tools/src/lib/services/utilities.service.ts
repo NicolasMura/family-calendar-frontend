@@ -43,6 +43,28 @@ export class UtilitiesService extends GlobalService {
     super(errorHandlingService);
   }
 
+  /**
+   * Detects if device is on iOS
+   */
+  isIos(): boolean {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test( userAgent );
+  }
+
+  /**
+   * Detects if device is in standalone mode (iOS specific)
+   */
+  isInStandaloneModeiOS(): boolean {
+    return ('standalone' in (window as any).navigator) && ((window as any).navigator.standalone);
+  }
+
+  /**
+   * Detects if device is in standalone mode (Chrome specific)
+   */
+  isInStandaloneModeChrome(): boolean {
+    return window.matchMedia('(display-mode: standalone)').matches;
+  }
+
   getHostname(): string {
     return this.window.location.hostname;
   }

@@ -1,3 +1,77 @@
+<div class="users"
+     style="display: flex; height: 40px; background-color: indianred;">
+  <div style="flex: 1 1 0px;"></div>
+  <div *ngFor="let user of userService.familyUsers"
+       style="flex: 1 1 0px;">
+    {{ user.profile.name }}
+  </div>
+</div>
+<swiper #weeksSwiper class="swiper-container" *ngIf="userService.users"
+        [config]="config"
+        [(index)]="sliderIndex"
+        [disabled]="isSliderDisabled"
+        (indexChange)="onIndexChange($event)"
+        (slideChangeTransitionEnd)="onSlideChangeTransitionEnd($event)">
+  <!-- Weeks loop -->
+  <div *ngFor="let weekSlide of calendarEventService.weeksSlides"
+       class="swiper-slide" style="display: flex; flex-direction: column;">
+    <div class="week"
+         style="height: 100%; padding: 0px 10px; display: flex; flex-direction: column; justify-content: space-around;">
+      <!-- Days loop -->
+      <div *ngFor="let day of weekSlide?.days"
+           class="day"
+           style="height: calc(100%/7); flex: calc(1/7) 1 0px; display: flex;">
+
+        <!-- Day name -->
+        <div class="label"
+             style="flex: 1 1 0px;"
+             (dblclick)="openEventDetailDialog(day);">
+          {{ day.nb }}<br>{{ day.label }}
+        </div>
+
+        <!-- Users loop -->
+        <div *ngFor="let user of userService.familyUsers" matRipple
+             (dblclick)="openEventDetailDialog(day, user);"
+             class="events"
+             style="flex: 1 1 0px; display: flex; flex-direction: column; overflow: hidden; outline: 1px solid grey;">
+          <!-- Events (filtered by user) loop -->
+          <div class="event" *ngFor="let event of day.events | eventsFilter:{user: user, childrenEmails: userService.childrenEmails}; let i = index;"
+               (click)="openEventDetailDialog(event);"
+               [class]="'bg hoverable ' + event.color"
+               style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px;; cursor: pointer;"
+               [style.display]="i < 2 ? 'block' : 'none'">
+            <div *ngIf="i < 2"
+                 class="label"
+                 style="width: calc(100% - 10px); margin: 0 auto; overflow: hidden;">
+              <span style="white-space: nowrap; display: flex; align-items: center;">
+                <mat-icon *ngIf="event.category === 'birthday'" style="font-size: 16px; height: 16px; width: 16px; margin-right: 5px;">cake</mat-icon>
+                {{ event.title }}
+              </span>
+            </div>
+          </div>
+          <!-- Show more events button (if needed) -->
+          <button mat-icon-button
+                  *ngIf="getDayEventsForUser(day, user) > 2"
+                  (click)="showMoreEvents(day, user)"
+                  class="more_events"
+                  style="height: 22px; line-height: 22px; color: rgb(63, 81, 181);">
+            <mat-icon>more_horiz</mat-icon><span>+{{ getDayEventsForUser(day, user) - 2 }}</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</swiper>
+
+<button mat-fab color="primary" aria-label="Create event"
+        (click)="createEvent()"
+        style="position: absolute; bottom: 20px; right: 20px; z-index: 1000;">
+  <mat-icon>add</mat-icon>
+</button>
+
+
+<!-- https://medium.com/factory-mind/angular-websocket-node-31f421c753ff -->
 <!-- <div class="container">
   <div class="header">
     <mat-form-field>
@@ -36,65 +110,3 @@
     {{ user.profile.name }}
   </div>
 </div> -->
-<div class="users"
-     style="display: flex; height: 40px; background-color: indianred;">
-  <div style="flex: 1 1 0px;"></div>
-  <div *ngFor="let user of userService.familyUsers"
-       style="flex: 1 1 0px;">
-    {{ user.profile.name }}
-  </div>
-</div>
-<swiper #weeksSwiper class="swiper-container" *ngIf="userService.users"
-        [config]="config"
-        [(index)]="sliderIndex"
-        [disabled]="isSliderDisabled"
-        (indexChange)="onIndexChange($event)"
-        (slideChangeTransitionEnd)="onSlideChangeTransitionEnd($event)">
-  <!-- Weeks loop -->
-  <div *ngFor="let weekSlide of calendarEventService.weeksSlides"
-       class="swiper-slide" style="display: flex; flex-direction: column;">
-    <div class="week"
-         style="height: 100%; padding: 0px 10px; display: flex; flex-direction: column; justify-content: space-around;">
-      <!-- Days loop -->
-      <div *ngFor="let day of weekSlide?.days"
-           class="day"
-           style="height: calc(100%/7); flex: calc(1/7) 1 0px; display: flex;">
-
-        <!-- Day name -->
-        <div class="label"
-             style="flex: 1 1 0px;"
-             (dblclick)="openEventDetailDialog(day);">
-          {{ day.nb }}<br>{{ day.label }}
-        </div>
-
-        <!-- Users loop -->
-        <div *ngFor="let user of userService.familyUsers"
-             (dblclick)="openEventDetailDialog(day, user);"
-             class="events"
-             style="flex: 1 1 0px; display: flex; flex-direction: column; overflow: hidden; outline: 1px solid grey;">
-          <!-- Events (filtered by user) loop -->
-          <div class="event" *ngFor="let event of day.events | eventsFilter:{user: user, childrenEmails: userService.childrenEmails}; let i = index;"
-               (click)="openEventDetailDialog(event);"
-               style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px;; cursor: pointer;"
-               [style.display]="i < 2 ? 'block' : 'none'">
-            <div *ngIf="i < 2"
-                 class="label"
-                 style="width: calc(100% - 10px); margin: 0 auto; overflow: hidden;"
-                 [style.color]="!user.profile.isChild ? 'white' : 'darkorange'">
-              <span style="white-space: nowrap;">{{ event.title }}</span>
-            </div>
-          </div>
-          <!-- Show more events button (if needed) -->
-          <button mat-icon-button
-                  *ngIf="getDayEventsForUser(day, user) > 2"
-                  (click)="showMoreEvents(day, user)"
-                  class="more_events"
-                  style="height: 22px; line-height: 22px; color: rgb(63, 81, 181);">
-            <mat-icon>more_horiz</mat-icon><span>+{{ getDayEventsForUser(day, user) - 2 }}</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</swiper>

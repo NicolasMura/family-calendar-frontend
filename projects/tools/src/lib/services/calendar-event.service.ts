@@ -97,7 +97,7 @@ export class CalendarEventService extends GlobalService {
             event.endDate,
             event.usersEmails,
             event.reminders,
-            event.color,
+            event.color || 'blue',
             event.category,
             event.humanStartDate || moment.unix(Number(event.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
             event.humanEndDate || moment.unix(Number(event.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
@@ -168,7 +168,9 @@ export class CalendarEventService extends GlobalService {
       startDate: event.startDate,
       endDate: event.endDate,
       usersEmails: event.usersEmails,
-      reminders: event.reminders
+      reminders: event.reminders,
+      color: event.color,
+      category: event.category
     };
     return this.http.put<CalendarEvent>(url, body)
       .pipe(

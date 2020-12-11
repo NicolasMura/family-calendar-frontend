@@ -1,19 +1,28 @@
 <h1 mat-dialog-title>
   {{ data.day.label }}
   <div style="color: rgb(63, 81, 181);">{{ data.day.nb }}</div>
+  <div style="color: rgb(63, 81, 181);" *ngIf="!data.user.profile.isChild">
+    <span>{{ data.user.profile.name }}</span>
+  </div>
+  <div style="color: rgb(63, 81, 181);" *ngIf="data.user.profile.isChild">
+    <span *ngFor="let schtroumpf of data.user.schtroumpfs">{{ schtroumpf.profile.name + ' '}}</span>
+  </div>
 </h1>
 <div mat-dialog-content>
   <!-- Events (filtered by user) loop -->
   <div class="event" *ngFor="let event of data.day.events | eventsFilter:{user: data.user, childrenEmails: userService.childrenEmails};"
-      (click)="openEventDetailDialog(event);"
-      style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px;">
+       (click)="openEventDetailDialog(event);"
+       [class]="'bg hoverable ' + event.color"
+       style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px;">
     <div class="label"
-         style="width: calc(100% - 10px); margin: 0 auto;  cursor: pointer;"
-        [style.color]="!data.user.profile.isChild ? 'white' : 'darkorange'">
-      <span style="white-space: nowrap;">{{ event.title }}</span>
+         style="width: calc(100% - 10px); margin: 0 auto;  cursor: pointer;">
+      <span style="white-space: nowrap; display: flex; align-items: center;">
+        <mat-icon *ngIf="event.category === 'birthday'" style="font-size: 16px; height: 16px; width: 16px; margin-right: 5px;">cake</mat-icon>
+        {{ event.title }}
+      </span>
     </div>
   </div>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="cancel()" cdkFocusInitial>Ça roule</button>
+  <button mat-button (click)="cancel()" cdkFocusInitial style="margin-left: auto;">OKAY</button>
 </div>

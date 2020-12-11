@@ -372,6 +372,15 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Open event detail view dialog via add button
+   */
+  public createEvent(): void {
+    const day: Day = this.calendarEventService.weeksSlides[this.sliderIndex].days[0];
+
+    this.openEventDetailDialog(day);
+  }
+
+  /**
    * Open event detail view dialog =
    * - create view if input is a day + pass day / user data
    * - detail view if input is an event + pass event data
@@ -390,8 +399,6 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     dialogConfig.panelClass = 'custom-theme'; // @TODO
 
     if (input instanceof CalendarEvent) {
-      // console.log('click !');
-
       const data: EventData = {
         existingEvent: input
       };
@@ -399,8 +406,6 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     }
 
     else if (input instanceof Day) {
-      // console.log('double click !');
-
       const data: EventData = {
         newEvent: {
           day: input,

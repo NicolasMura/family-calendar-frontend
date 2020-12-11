@@ -1,5 +1,6 @@
 <button mat-icon-button color="primary"
-        (click)=cancel()>
+        (click)=cancel()
+        style="margin-left: -10px;">
   <mat-icon>arrow_back</mat-icon>
 </button>
 
@@ -8,13 +9,13 @@
         [disabled]="!eventForm.valid || submitLoadingSpinner"
         [class.mc-spinner]="submitLoadingSpinner"
         class="submit"
-        style="float: right;">
+        style="float: right; margin-left: -10px;">
   <mat-icon>done</mat-icon>
 </button>
 
 <button mat-icon-button [matMenuTriggerFor]="menu" color="primary" aria-label="menu"
         *ngIf="data.existingEvent"
-        style="float: right;">
+        style="float: right; margin-right: 10px;">
   <mat-icon>more_vert</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
@@ -24,85 +25,152 @@
   </button>
 </mat-menu>
 
-<form [formGroup]="eventForm" novalidate style="display: flex; flex-direction: column;">
+<form [formGroup]="eventForm" novalidate>
 
   <!-- Title -->
-  <mat-form-field appearance="legacy">
-    <mat-label for="title">Titre du magnifique événement</mat-label>
-    <input matInput type="text" formControlName="title" libAutofocus />
-    <mat-error *ngIf="errorHandling('title', 'required')">
-      Un événement sans titre, c'est comme un Noël sans marrons glacés
-    </mat-error>
-  </mat-form-field>
+  <div class="title" style="display: flex; align-items: center; margin-bottom: 5px;">
+    <mat-icon aria-hidden="false" aria-label="Rappel icon" style="margin-right: 10px;">title</mat-icon>
+    <mat-form-field appearance="legacy" style="flex: 1;">
+      <mat-label for="title">Titre du magnifique événement</mat-label>
+      <input #titleInput matInput type="text" formControlName="title">
+      <mat-error *ngIf="errorHandling('title', 'required')">
+        Un événement sans titre, c'est comme un Noël sans marrons glacés
+      </mat-error>
+    </mat-form-field>
+  </div>
 
-  <!-- Start Date -->
-  <mat-form-field appearance="fill">
-    <mat-label>Début</mat-label>
-    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
-          formControlName="standardStartDate"
-          (dateChange)="onStartDateChange($any($event))">
-    <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-    <ngx-mat-datetime-picker #picker [enableMeridian]="false"></ngx-mat-datetime-picker>
-    <mat-error>{{ eventForm.get('standardStartDate')?.errors | json }}</mat-error>
-  </mat-form-field>
+  <!-- Dates -->
+  <div class="startDate">
+    <div style="height: 40px; display: flex; align-items: center;">
+      <mat-icon aria-hidden="false" aria-label="Horloge icon" style="margin-right: 10px;">schedule</mat-icon>
+      <span>Toute la sainte journée ?</span>
+      <mat-slide-toggle
+          formControlName="isAllDayEvent"
+          [checked]="eventForm.get('isAllDayEvent')?.value"
+          (change)="allDayToggleChange();"
+          style="margin-left: auto;">
+      </mat-slide-toggle>
+    </div>
+    <div class="startDate" matRipple
+          (click)="picker.open()"
+          style="position: relative; height: 40px; line-height: 40px; margin-left: 34px; display: flex; cursor: pointer;">
+      <div>
+        {{ eventForm.get('standardStartDate')?.value | date:'longDate':undefined:'fr-FR' }}
+      </div>
+      <div *ngIf="!eventForm.get('isAllDayEvent')?.value" style="margin-left: auto;">
+        {{ eventForm.get('standardStartDate')?.value | date:'HH:mm':undefined:'fr-FR' }}
+      </div>
+      <mat-form-field #test appearance="fill" style="position: absolute; visibility: hidden;">
+        <mat-label>Début</mat-label>
+        <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
+              formControlName="standardStartDate"
+              (dateChange)="onStartDateChange($any($event))">
+        <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #picker [enableMeridian]="false" [touchUi]="false"></ngx-mat-datetime-picker>
+        <mat-error>{{ eventForm.get('standardStartDate')?.errors | json }}</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="endDate" matRipple
+         (click)="picker2.open()"
+         style="position: relative; height: 40px; line-height: 40px; margin-left: 34px; display: flex; cursor: pointer;">
+      <div>
+        {{ eventForm.get('standardEndDate')?.value | date:'longDate':undefined:'fr-FR' }}
+      </div>
+      <div *ngIf="!eventForm.get('isAllDayEvent')?.value" style="margin-left: auto;">
+        {{ eventForm.get('standardEndDate')?.value | date:'HH:mm':undefined:'fr-FR' }}
+      </div>
+      <mat-form-field appearance="fill" style="position: absolute; visibility: hidden;">
+        <mat-label>Fin</mat-label>
+        <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choisir une date"
+              formControlName="standardEndDate"
+              (dateChange)="onEndDateChange($any($event))">
+        <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #picker2 [enableMeridian]="false" [touchUi]="false"></ngx-mat-datetime-picker>
+        <mat-error>{{ eventForm.get('standardEndDate')?.errors | json }}</mat-error>
+      </mat-form-field>
+    </div>
+  </div>
 
-  <!-- End Date -->
-  <mat-form-field appearance="fill">
-    <mat-label>Fin</mat-label>
-    <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choisir une date"
-          formControlName="standardEndDate"
-          (dateChange)="onEndDateChange($any($event))">
-    <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
-    <ngx-mat-datetime-picker #picker2 [enableMeridian]="false"></ngx-mat-datetime-picker>
-    <mat-error>{{ eventForm.get('standardEndDate')?.errors | json }}</mat-error>
-  </mat-form-field>
+  <mat-divider></mat-divider>
 
   <!-- Users Emails -->
-  <mat-form-field appearance="fill">
-    <mat-label>Les parents / schtroumpfs concernés</mat-label>
-    <mat-select formControlName="usersEmails" multiple>
-      <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
-        {{ user.profile.name }}
-      </mat-option>
-    </mat-select>
-    <mat-error *ngIf="errorHandling('usersEmails', 'validateArrayNotEmpty')">
-      Mais c'est "qui qui" est concerné par l'événement ?
-    </mat-error>
-  </mat-form-field>
+  <div class="usersEmails" style="display: flex; align-items: center;">
+    <mat-icon aria-hidden="false" aria-label="Horloge icon" style="margin-right: 10px;">people</mat-icon>
+    <mat-form-field appearance="standard" style="flex: 1;">
+      <mat-label>Les parents / schtroumpfs concernés</mat-label>
+      <mat-select formControlName="usersEmails" multiple>
+        <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
+          {{ user.profile.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="errorHandling('usersEmails', 'validateArrayNotEmpty')">
+        Mais c'est "qui qui" est concerné par l'événement ?
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <mat-divider></mat-divider>
 
   <!-- Reminders -->
-  <mat-form-field appearance="fill">
-    <mat-label>Rappel(s)</mat-label>
-    <mat-select formControlName="reminders" multiple>
-      <mat-option *ngFor="let user of userService.getUsers()" [value]="user.email">
-        @TODO
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="reminders" style="position: relative;">
+    <div class="display" style="display: flex; align-items: center;">
+      <mat-icon aria-hidden="false" aria-label="Rappel icon" style="align-self: start; margin-right: 10px; margin-top: 8px;">notifications_none</mat-icon>
+      <div style="flex: 1; display: flex; flex-direction: column;">
+        <div *ngFor="let reminder of eventForm.get('reminders')?.value"
+             style="height: 40px; line-height: 40px; display: flex; align-items: center; cursor: pointer;">
+          <div (click)="notifs.open()" matRipple
+               style="height: 100%; width: 100%;">
+            {{ reminder.durationHumanized }}
+          </div>
+          <mat-icon (click)="removeReminder(reminder)" aria-hidden="false" aria-label="clear" style="margin-left: auto;">clear</mat-icon>
+        </div>
+        <div *ngIf="eventForm.get('reminders')?.value.length === 0" matRipple
+             (click)="notifs.open()"
+             style="height: 40px; line-height: 40px; display: flex; align-items: center; cursor: pointer;">
+             <div>Ajouter un rappel</div>
+        </div>
+      </div>
+    </div>
+    <mat-form-field appearance="fill" style="position: absolute; visibility: hidden;">
+      <mat-label>Rappel(s)</mat-label>
+      <mat-select #notifs formControlName="reminders" multiple [compareWith]="compareRemindersWith">
+        <mat-option *ngFor="let reminder of availableReminders" [value]="reminder">
+          {{ reminder.durationHumanized }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <mat-divider></mat-divider>
 
   <!-- Color -->
-  <mat-form-field appearance="fill">
-    <mat-label>Couleur</mat-label>
-    <mat-select formControlName="color">
-      <mat-option value="blue" style="color: rgb(121, 134, 203);">Couleur par défaut</mat-option>
-      <mat-option value="tomate" style="color: rgb(213, 0, 0);">Tomate</mat-option>
-      <mat-option value="banane" style="color: rgb(246, 191, 38);">Banane</mat-option>
-      <mat-option value="myrtille" style="color: rgb(63, 81, 181);">Myrtille</mat-option>
-      <mat-option value="sauge" style="color: rgb(51, 182, 121);">Sauge</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="color">
+    <mat-form-field appearance="fill" style="width: 100%;">
+      <mat-label>Couleur</mat-label>
+      <mat-select formControlName="color" [class]="eventForm.get('color')?.value">
+        <mat-option value="blue" style="color: rgb(121, 134, 203);">Couleur par défaut</mat-option>
+        <mat-option value="tomate" style="color: rgb(213, 0, 0);">Tomate</mat-option>
+        <mat-option value="banane" style="color: rgb(246, 191, 38);">Banane</mat-option>
+        <mat-option value="myrtille" style="color: rgb(63, 81, 181);">Myrtille</mat-option>
+        <mat-option value="sauge" style="color: rgb(51, 182, 121);">Sauge</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Catégorie</mat-label>
-    <mat-select formControlName="category">
-      <mat-option value="">Aucune</mat-option>
-      <mat-option value="birthday">Anniversaire</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <!-- Category -->
+  <div class="category">
+    <mat-form-field appearance="fill" style="width: 100%;">
+      <mat-label>Catégorie</mat-label>
+      <mat-select formControlName="category">
+        <mat-option value="">Aucune</mat-option>
+        <mat-option value="birthday">Anniversaire</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
   <!-- Debug form START -->
-  <!-- <pre style="font-size:15px">{{ eventForm.getRawValue() | json }}</pre>
-  <pre style="font-size:15px">{{ unixStartDate }}</pre>
+  <!-- <pre style="font-size:15px">{{ eventForm.getRawValue() | json }}</pre> -->
+  <!-- <pre style="font-size:15px">{{ unixStartDate }}</pre>
   <pre style="font-size:15px">{{ unixEndDate }}</pre> -->
   <!-- Debug form END -->
 
@@ -110,7 +178,8 @@
           (click)=save()
           [disabled]="!eventForm.valid || submitLoadingSpinner"
           [class.mc-spinner]="submitLoadingSpinner"
-          class="submit">
+          class="submit"
+          style="float: right;">
     Enregistrer
   </button>
 

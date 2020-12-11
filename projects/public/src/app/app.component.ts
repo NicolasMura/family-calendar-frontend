@@ -112,16 +112,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
     /* iOS specific */
     // See https://itnext.io/part-1-building-a-progressive-web-application-pwa-with-angular-material-and-aws-amplify-5c741c957259
-    // Detects if device is on iOS
-    const isIos = () => {
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      return /iphone|ipad|ipod/.test( userAgent );
-    };
-    // Detects if device is in standalone mode
-    const isInStandaloneMode = () => ('standalone' in (window as any).navigator) && ((window as any).navigator.standalone);
-
     // Checks if should display install popup notification:
-    if (isIos() && !isInStandaloneMode()) {
+    if (this.utilitiesService.isIos() && !this.utilitiesService.isInStandaloneModeiOS()) {
       this.snackBar.openFromComponent(IosInstallComponent, {
         duration: 0,
         horizontalPosition: 'start',

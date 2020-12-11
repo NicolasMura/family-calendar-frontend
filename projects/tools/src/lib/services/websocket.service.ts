@@ -94,6 +94,7 @@ export class WebSocketService implements OnDestroy {
 
   private getNewWebSocket(): WebSocketSubject<WebSocketMessage> {
     console.log('getNewWebSocket() : ', WS_ENDPOINT);
+
     return webSocket({
       url: WS_ENDPOINT,
       openObserver: {
