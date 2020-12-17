@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { LocalStorageService } from 'ngx-webstorage';
+import { LocalStorage } from 'ngx-webstorage';
 import { GlobalService } from './global-service.service';
 import { UserService } from './user.service';
 import { ErrorHandlingService } from 'projects/tools/src/lib/services/error-handling.service';
@@ -18,6 +19,11 @@ import { NotificationService } from 'projects/tools/src/lib/services/notificatio
 export class PushNotificationService extends GlobalService {
   // protected baseUrlAuth = environment.backendApi.baseUrlAuth;
 
+  /**
+   * Store token in local storage, allowing to retrieve credentials when application starts
+   */
+  @LocalStorage('notificationPermissionAlreadyAsked') private notificationPermissionAlreadyAsked!: boolean;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -27,16 +33,47 @@ export class PushNotificationService extends GlobalService {
     protected errorHandlingService: ErrorHandlingService
   ) {
     super(errorHandlingService);
+
+    console.log(this.notificationPermissionAlreadyAsked);
+    if (!this.notificationPermissionAlreadyAsked) {
+      this.askForNotificationPermission();
+    }
+
+    // TESTS Firebase
+    fetch('https://pwagram-44b72.firebaseio.com/subscriptions.json')
+      .then((res: any) => {
+        if (res.ok) {
+          res.json().then((subscriptions: any) => {
+            // console.log(subscriptions);
+            for (const subscription in subscriptions) {
+              if (subscriptions.hasOwnProperty(subscription)) {
+                console.log(subscriptions[subscription]);
+              }
+            }
+          });
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
   }
 
   public askForNotificationPermission(): void {
+    // test 'Notification' in window for iOS devices
+    if (!('serviceWorker' in navigator && 'Notification' in window)) {
+      console.log('No support for serviceWorker / Notification, too bad...');
+      return;
+    }
+
     Notification.requestPermission((result) => {
       console.log('User Choice', result);
       if (result !== 'granted') {
         console.log('No notification permission granted!');
       } else {
         this.configurePushSub();
+        console.log('Notification permission granted!');
       }
+      this.notificationPermissionAlreadyAsked = true;
     });
   }
 
@@ -45,6 +82,7 @@ export class PushNotificationService extends GlobalService {
       return;
     }
 
+    console.log('configuring Push Subscription...');
     let reg: ServiceWorkerRegistration;
     navigator.serviceWorker.ready
       .then((swReg: ServiceWorkerRegistration) => {
@@ -103,7 +141,7 @@ export class PushNotificationService extends GlobalService {
   }
 
   public displayConfirmNotification(): void {
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'Notification' in window) {
       const options = {
         body: 'You successfully subscribed to our Notification service!',
         data: {

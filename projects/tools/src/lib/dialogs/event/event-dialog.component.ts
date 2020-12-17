@@ -203,7 +203,6 @@ export class EventDialogComponent implements OnInit {
    * Real-time startDate form value update
    */
   onStartDateChange(event: MatDatepickerInputEvent<any>): void {
-    console.log(event.value);
     if (event.value) {
       this.unixStartDate = Math.round(event.value.valueOf() / 1000).toString();
       this.savedEvent.startDate = this.unixStartDate;
@@ -291,7 +290,6 @@ export class EventDialogComponent implements OnInit {
         moment.unix(Number(this.unixEndDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
         this.data.existingEvent ? this.data.existingEvent._id : ''
       );
-      console.log(event);
 
       if (this.data.existingEvent) {
         this.update(event);
@@ -306,6 +304,7 @@ export class EventDialogComponent implements OnInit {
    */
   public create(event: CalendarEvent): void {
     if (this.eventForm.valid) {
+      console.log('event to create :', event);
       this.calendarEventService.createEvent(event)
       .subscribe((newEvent: CalendarEvent) => {
         this.submitLoadingSpinner = false;
@@ -341,7 +340,7 @@ export class EventDialogComponent implements OnInit {
    */
   public remove(): void {
     if (this.eventForm.valid) {
-      console.log('event to remove :', this.data.existingEvent);
+      console.log('event to delete :', this.data.existingEvent);
       this.calendarEventService.deleteEventById(this.data.existingEvent?._id as string)
         .subscribe((deletedEvent: CalendarEvent) => {
           this.submitLoadingSpinner = false;

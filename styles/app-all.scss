@@ -23,7 +23,7 @@
 $roboto-font-path: "~roboto-fontface/fonts";
 @import "~roboto-fontface/css/roboto/sass/roboto-fontface";
 
-* {
+*:not(input):not(textarea) { // to make it work for iOS
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -46,10 +46,6 @@ body {
     margin: 0;
     padding: 0;
   }
-}
-
-::selection {
-  // background: $mycloud-primary;
 }
 
 mc-root {

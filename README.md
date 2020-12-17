@@ -28,5 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO
 
-  * Icons iOS
+  * Icons iOS + message for landscape mode (ex.: not supported)
   * Splashscreen
+  * CI avec Harness (https://harness.io/)
+  * Cache icons

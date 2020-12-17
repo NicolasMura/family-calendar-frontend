@@ -88,7 +88,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       this.sliderIndex = this.calendarEventService.sliderIndexSaved;
 
       // update url query params
-      const queryParams: Params = { init_unix_date: this.calendarEventService.getCurrentMoment().unix() };
+      const queryParams: Params = { init_unix_date: this.calendarEventService.getCurrentMoment().unix().toString() };
       this.router.navigate(
         [],
         {
@@ -118,29 +118,32 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       }
     });
 
-    // get all family members (if not already done)
-    if (this.userService.users[0]._id === '') {
-      // this.userService.getAllUsers().subscribe((users: User[]) => {
-      //   console.log(users);
-      // });
-    }
-
     // Initialize current Week view - Get possible unix date in query params
-    this.activatedRoute.queryParams.pipe(first()).subscribe((params: Params) => {
+    this.activatedRoute.queryParams.pipe(first()).subscribe(async (params: Params) => {
 
       // populate weeks (if not already done)
       if (this.calendarEventService.weeksSlides[0].weekNumber === -1) {
         const initUnixDate = params.init_unix_date;
 
-        this.calendarEventService.weeksSlides = this.buildAndPopulateThreeWeeks(
+        this.calendarEventService.weeksSlides = await this.buildAndPopulateThreeWeeks(
           this.calendarEventService.weeksSlides,
-          Number(initUnixDate)
+          Number(initUnixDate),
+          params.openEventId || undefined
         );
       }
     });
 
     // subscribe to currentMoment$ to update view
-    this.calendarEventService.currentMoment$.pipe(skip(1)).subscribe((updatedCurrentMoment: moment.Moment) => {
+    this.calendarEventService.currentMoment$.pipe(skip(1)).subscribe(async (updatedCurrentMoment: moment.Moment) => {
+      // update url query params
+      const queryParams: Params = { init_unix_date: updatedCurrentMoment.unix().toString() };
+      this.router.navigate(
+      [],
+      {
+        relativeTo: this.activatedRoute,
+        queryParams,
+        queryParamsHandling: 'merge', // remove to replace all query params by provided
+      });
 
       // find potential existing slider index that corresponds to updatedCurrentMoment
       let targetWeek: Week = null as any;
@@ -159,7 +162,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       if (!targetWeek) {
         // on va la faire simple
         this.sliderIndex = 1;
-        this.calendarEventService.weeksSlides = this.buildAndPopulateThreeWeeks(
+        this.calendarEventService.weeksSlides = await this.buildAndPopulateThreeWeeks(
           this.calendarEventService.weeksSlides,
           updatedCurrentMoment.unix()
         );
@@ -191,7 +194,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   /**
    * Shortcut to populate three Weeks
    */
-  buildAndPopulateThreeWeeks(weeks: Week[], unixDate: number): Week[] {
+  async buildAndPopulateThreeWeeks(weeks: Week[], unixDate: number, openEventId?: string): Promise<Week[]> {
     let initMoment: moment.Moment;
     let previousMoment: moment.Moment;
     let nextMoment: moment.Moment;
@@ -215,7 +218,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     ' to ' + weeks[this.sliderIndex + 1].weekNumber);
     const minDate: string = moment(previousMoment).startOf('week').unix().toString();
     const maxDate: string = moment(nextMoment).endOf('week').unix().toString();
-    this.getEvents(minDate, maxDate);
+    await this.getEvents(minDate, maxDate);
 
     // save current Slider index
     this.calendarEventService.sliderIndexSaved = this.sliderIndex;
@@ -223,7 +226,40 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     // update currentMoment
     this.calendarEventService.setCurrentMoment(this.calendarEventService.weeksSlides[this.sliderIndex].days[0].momentObject);
 
-    return weeks;
+    if (openEventId) {
+      let event: CalendarEvent = null as any;
+      console.log(this.calendarEventService.weeksSlides[this.sliderIndex]);
+      this.calendarEventService.weeksSlides[this.sliderIndex].days.some((day: Day) => {
+        return day.events?.find((ev: CalendarEvent) => {
+          if (ev._id === openEventId) {
+            event = ev;
+            return true;
+          }
+          return false;
+        }) as CalendarEvent;
+      });
+
+      if (event) { // test to make app robust between DEV and PROD modes (or event could have been deleted...)
+        setTimeout(() => {
+          this.openEventDetailDialog(event);
+        }, 100);
+      } else {
+        this.notificationService.sendNotification('Désolé, l\'événément en question est dans les choux...');
+      }
+
+      // remove openEventId from url
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {
+          openEventId: null,
+        },
+        queryParamsHandling: 'merge'
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      resolve(weeks);
+    });
   }
 
   /**
@@ -252,6 +288,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       });
     };
 
+    // get all family members (if not already done)
     if (this.userService.users[0]._id === '') {
       console.log('await getUsers()...');
       await getUsers();
@@ -275,6 +312,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
           });
         });
         console.log(this.calendarEventService.weeksSlides);
+        resolve();
       });
     });
   }
@@ -441,52 +479,62 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    * Update view following event user CRUD action
    */
   public updateView(event: CalendarEvent): void {
-    let updatedWeekIndex: number;
-    let updatedDay: Day;
-    let updatedDayIndex: number;
-    let existingEventIndex: number;
+    let firstUpdatedWeekIndex: number = undefined as any;
+    let firstUpdatedDay: Day = undefined as any;
+    let firstUpdatedDayIndex: number = undefined as any;
+    let existingEventIndex: number | undefined;
+
+    let secondUpdatedWeekIndex: number = undefined as any;
+    let secondUpdatedDay: Day = undefined as any;
+    let secondUpdatedDayIndex: number = undefined as any;
 
     this.calendarEventService.weeksSlides.forEach((week: Week, indexWeek: number) => {
       week.days.forEach((day: Day, indexDay: number) => {
-        if (day.nb === moment.unix(Number(event.startDate)).date()) {
-          updatedWeekIndex = indexWeek;
-          updatedDay = day;
-          updatedDayIndex = indexDay;
 
-          // need to update weeksSlides[updatedWeekIndex].day[updatedDayIndex]
-          if (Number.isInteger(updatedWeekIndex) && Number.isInteger(updatedDayIndex)) {
-            updatedDay.events?.find((e: CalendarEvent, indexEv: number) => {
-              if (e._id === event._id) {
-                existingEventIndex = indexEv;
-                // console.log('existingEventIndex : ', existingEventIndex);
-                return true;
-              }
-              return false;
-            });
+        const i = day.events?.findIndex((e: CalendarEvent, indexEv: number) => e._id === event._id);
+        if (i !== -1) {
+          firstUpdatedWeekIndex = indexWeek;
+          firstUpdatedDayIndex = indexDay;
+          firstUpdatedDay = day;
+          existingEventIndex = i;
+        }
 
-            // update or delete case
-            if (Number.isInteger(existingEventIndex)) {
-              if (!event._deleted) {
-                // console.log('update case => replace event');
-                (updatedDay.events as CalendarEvent[])[existingEventIndex] = event;
-              } else {
-                // console.log('delete case => remove event');
-                updatedDay.events?.splice(existingEventIndex, 1);
-              }
-            } else {
-              // console.log('create case => add event');
-              // create case => update by inserting ev
-              if (updatedDay.events) {
-                updatedDay.events.push(event);
-              } else {
-                updatedDay.events = [event];
-              }
-            }
-
-          }
+        if (day.momentObject.dayOfYear() === moment.unix(Number(event.startDate)).dayOfYear()
+            && day.momentObject.year() === moment.unix(Number(event.startDate)).year()) {
+          secondUpdatedWeekIndex = indexWeek;
+          secondUpdatedDayIndex = indexDay;
+          secondUpdatedDay = day;
         }
       });
     });
+
+    // first, remove "old" event from view if existing
+    if (Number.isInteger(existingEventIndex)) {
+      // console.log('found "old" event to remove from view');
+      (firstUpdatedDay.events as CalendarEvent[]).splice(existingEventIndex as number, 1);
+
+      if (!event._deleted) {
+        // if event has same date
+        if (firstUpdatedWeekIndex === secondUpdatedWeekIndex && firstUpdatedDayIndex === secondUpdatedDayIndex) {
+          // console.log('update case - same day');
+          (firstUpdatedDay.events as CalendarEvent[])[existingEventIndex as number] = event;
+        // otherwise, it means that event was moved to another date
+        } else {
+          // console.log('update case - move to new day');
+          if (secondUpdatedDay) {
+            (secondUpdatedDay.events as CalendarEvent[]).push(event);
+          }
+        }
+      }
+    // create case
+    } else {
+      // console.log('create case');
+      if (secondUpdatedDay.events) {
+        secondUpdatedDay.events.push(event);
+      } else {
+        secondUpdatedDay.events = [event];
+      }
+    }
 
     console.log(this.calendarEventService.weeksSlides);
   }
