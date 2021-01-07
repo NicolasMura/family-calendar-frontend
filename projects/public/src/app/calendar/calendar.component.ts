@@ -18,6 +18,7 @@ import { Day } from 'projects/tools/src/lib/models/day.model';
 import { WebSocketMessage } from 'projects/tools/src/lib/models/websocket-message.model';
 import { EventData, EventDialogComponent } from 'projects/tools/src/lib/dialogs/event/event-dialog.component';
 import { ShowMoreEventsData, ShowMoreEventsDialogComponent } from 'projects/tools/src/lib/dialogs/event/show-more-events-dialog.component';
+import { environment } from 'projects/tools/src/environments/environment';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     mousewheel: false,
     scrollbar: false,
     // navigation: true,
-    pagination: true
+    pagination: environment.production ? false : true
   };
   /**
    * Slider Swiper current index
@@ -184,10 +185,11 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Init slider for resize
+    // Init slider for correct resize on iOS
     // @TODO : à priori ne sert à rien, voir comment faire mieux pour iOS
     setTimeout(() => {
-      this.swiperDirectiveRef?.update();
+      // this.swiperDirectiveRef?.update();
+      this.swiperDirectiveRef?.init();
     }, 100);
   }
 

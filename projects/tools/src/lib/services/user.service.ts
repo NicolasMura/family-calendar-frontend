@@ -147,7 +147,7 @@ export class UserService extends GlobalService {
             }
           });
           // on pousse les schtroumpfs dans le dernier user
-          this.familyUsers.push(new User('0000', 'child@child.child', { name: 'Schtroumpfs', isChild: true }, childs, ''));
+          this.familyUsers.push(new User('0000', 'child@child.child', { name: 'Lutins', isChild: true }, childs, ''));
 
           this.users = usersWellFormatted;
           this.userStore.users = usersWellFormatted;

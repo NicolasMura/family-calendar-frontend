@@ -1,8 +1,9 @@
 <div class="users"
-     style="display: flex; height: 40px; background-color: indianred;">
+     style="display: flex; height: 40px;">
   <div style="flex: 1 1 0px;"></div>
   <div *ngFor="let user of userService.familyUsers"
-       style="flex: 1 1 0px;">
+       style="flex: 1 1 0px; font-size: 14px; display: flex; align-items: center; justify-content: center;"
+       class="user">
     {{ user.profile.name }}
   </div>
 </div>
@@ -16,24 +17,24 @@
   <div *ngFor="let weekSlide of calendarEventService.weeksSlides"
        class="swiper-slide" style="display: flex; flex-direction: column;">
     <div class="week"
-         style="height: 100%; padding: 0px 10px; display: flex; flex-direction: column; justify-content: space-around;">
+         style="height: 100%; /*padding: 0px 10px;*/ display: flex; flex-direction: column; justify-content: space-around;">
       <!-- Days loop -->
       <div *ngFor="let day of weekSlide?.days"
            class="day"
            style="height: calc(100%/7); flex: calc(1/7) 1 0px; display: flex;">
 
         <!-- Day name -->
-        <div class="label"
-             style="flex: 1 1 0px;"
-             (dblclick)="openEventDetailDialog(day);">
-          {{ day.nb }}<br>{{ day.label }}
+        <div class="details"
+             style="flex: 1 1 0px;">
+          <div class="number">{{ day.nb }}</div>
+          <div class="label">{{ day.label | titlecase }}</div>
         </div>
 
         <!-- Users loop -->
         <div *ngFor="let user of userService.familyUsers" matRipple
              (dblclick)="openEventDetailDialog(day, user);"
              class="events"
-             style="flex: 1 1 0px; display: flex; flex-direction: column; overflow: hidden; outline: 1px solid grey;">
+             style="flex: 1 1 0px; display: flex; flex-direction: column; overflow: hidden;">
           <!-- Events (filtered by user) loop -->
           <div class="event" *ngFor="let event of day.events | eventsFilter:{user: user, childrenEmails: userService.childrenEmails}; let i = index;"
                (click)="openEventDetailDialog(event);"

@@ -1,3 +1,51 @@
+$margin: 15px;
+
+.users {
+  & > div:first-child {
+    margin-left: $margin;
+  }
+
+  .user {
+    border-left: 1px solid rgba(46, 46, 46, 0.1);
+
+    &:last-child {
+      margin-right: $margin;
+    }
+  }
+}
+
+.day {
+  .details {
+    margin-left: $margin;
+    border-top: 1px solid rgba(46, 46, 46, 0.1);
+
+    .number {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      color: rgb(63, 81, 181);
+      font-family: 'PTSans-Regular';
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .label {
+      // font-family: 'Monotype Corsiva';
+      font-family: 'Tangerine';
+      font-size: 24px;
+      font-weight: 500;
+    }
+  }
+
+  .events {
+    border-top: 1px solid rgba(46, 46, 46, 0.1);
+    border-left: 1px solid rgba(46, 46, 46, 0.1);
+
+    &:last-child {
+      margin-right: $margin;
+    }
+  }
+}
+
 ::ng-deep {
   .swiper.s-wrapper {
     height: calc(100% - 40px)!important;

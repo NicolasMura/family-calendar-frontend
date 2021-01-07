@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'PTSans-Regular';
+  src: url('/assets/fonts/PTSans-Regular.ttf') format('ttf'),
+       url('/assets/fonts/PTSans-Regular.woff2') format('woff2'),
+       url('/assets/fonts/PTSans-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Monotype Corsiva';
+  src: url('/assets/fonts/MonotypeCorsiva_Regular.ttf') format('ttf'),
+       url('/assets/fonts/MonotypeCorsiva_Regular.woff2') format('woff2'),
+       url('/assets/fonts/MonotypeCorsiva_Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+// iOS compatible
+@import url('https://fonts.googleapis.com/css2?family=Tangerine&display=swap');
+
+// @font-face {
+//   font-family: 'MonotypeCorsiva_Regular';
+//   src: url('/assets/fonts/MonotypeCorsiva_Regular.ttf') format('ttf');
+//   font-weight: 500;
+//   font-style: normal;
+// }

@@ -142,7 +142,10 @@ export class EventDialogComponent implements OnInit {
       console.log(event);
     }
     else if (this.data.newEvent) {
-      const start: moment.Moment = moment().set('date', this.data.newEvent.day.nb);
+      const start: moment.Moment = moment()
+        .set('date', this.data.newEvent.day.momentObject.get('date'))
+        .set('month', this.data.newEvent.day.momentObject.get('month'))
+        .set('year', this.data.newEvent.day.momentObject.get('year'));
       const remaindingTime = 30 - (start.minute() % 30);
       const startDate = moment(start).add(remaindingTime, 'minute');
       const endDate = moment(start).add(remaindingTime + 120, 'minute');
@@ -249,8 +252,6 @@ export class EventDialogComponent implements OnInit {
    * Update startTime and endTime when event is all day, otherwise restore saved values
    */
   allDayToggleChange(): void {
-    console.log(this.savedEvent);
-
     if (this.eventForm.get('isAllDayEvent')?.value) {
       const startDate = moment(this.eventForm.get('standardStartDate')?.value).set('hour', 0).set('minute', 0);
       const endDate = moment(this.eventForm.get('standardEndDate')?.value).set('hour', 23).set('minute', 59);

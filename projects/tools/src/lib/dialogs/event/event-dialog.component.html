@@ -1,6 +1,6 @@
 <button mat-icon-button color="primary"
         (click)=cancel()
-        style="margin-left: -10px;">
+        style="padding-left: 24px; margin-left: -10px;">
   <mat-icon>arrow_back</mat-icon>
 </button>
 
@@ -9,7 +9,7 @@
         [disabled]="!eventForm.valid || submitLoadingSpinner"
         [class.mc-spinner]="submitLoadingSpinner"
         class="submit"
-        style="float: right; margin-left: -10px;">
+        style="float: right; padding-right: 24px; margin-left: -10px;">
   <mat-icon>done</mat-icon>
 </button>
 
@@ -28,7 +28,7 @@
 <form [formGroup]="eventForm" novalidate>
 
   <!-- Title -->
-  <div class="title" style="display: flex; align-items: center; margin-bottom: 5px;">
+  <div class="title" style="display: flex; align-items: center; margin-bottom: 5px; padding-left: 24px; padding-right: 24px;">
     <mat-icon aria-hidden="false" aria-label="Rappel icon" style="margin-right: 10px;">title</mat-icon>
     <mat-form-field appearance="legacy" style="flex: 1;">
       <mat-label for="title">Titre du magnifique événement</mat-label>
@@ -40,31 +40,30 @@
   </div>
 
   <!-- Dates -->
-  <div class="startDate">
-    <div style="height: 40px; display: flex; align-items: center;">
-      <mat-icon aria-hidden="false" aria-label="Horloge icon" style="margin-right: 10px;">schedule</mat-icon>
-      <span>Toute la sainte journée ?</span>
-      <mat-slide-toggle
-          formControlName="isAllDayEvent"
-          [checked]="eventForm.get('isAllDayEvent')?.value"
-          (change)="allDayToggleChange();"
-          style="margin-left: auto;">
+  <div class="dates">
+    <div style="height: 40px; display: flex; align-items: center; padding-left: 24px; padding-right: 24px;">
+      <mat-icon (click)="allDayToggle.toggle();" aria-hidden="false" aria-label="Horloge icon" style="margin-right: 10px;">schedule</mat-icon>
+      <span (click)="allDayToggle.toggle();">Toute la journée ?</span>
+      <mat-slide-toggle formControlName="isAllDayEvent" #allDayToggle
+                        (change)="allDayToggleChange();"
+                        style="margin-left: auto;">
       </mat-slide-toggle>
     </div>
     <div class="startDate" matRipple
-          (click)="picker.open()"
-          style="position: relative; height: 40px; line-height: 40px; margin-left: 34px; display: flex; cursor: pointer;">
+         (click)="picker.open()"
+         style="height: 40px; line-height: 40px; padding-left: 58px; padding-right: 24px; display: flex; cursor: pointer;">
+      <!-- <div matRipple style="position: absolute; left: 0px; width: 100%; height: 40px;"></div> -->
       <div>
         {{ eventForm.get('standardStartDate')?.value | date:'longDate':undefined:'fr-FR' }}
       </div>
       <div *ngIf="!eventForm.get('isAllDayEvent')?.value" style="margin-left: auto;">
         {{ eventForm.get('standardStartDate')?.value | date:'HH:mm':undefined:'fr-FR' }}
       </div>
-      <mat-form-field #test appearance="fill" style="position: absolute; visibility: hidden;">
+      <mat-form-field appearance="fill" style="position: absolute; top: -160px; visibility: hidden;">
         <mat-label>Début</mat-label>
         <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
-              formControlName="standardStartDate"
-              (dateChange)="onStartDateChange($any($event))">
+               formControlName="standardStartDate"
+               (dateChange)="onStartDateChange($any($event))">
         <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #picker [enableMeridian]="false" [touchUi]="false"></ngx-mat-datetime-picker>
         <mat-error>{{ eventForm.get('standardStartDate')?.errors | json }}</mat-error>
@@ -72,18 +71,19 @@
     </div>
     <div class="endDate" matRipple
          (click)="picker2.open()"
-         style="position: relative; height: 40px; line-height: 40px; margin-left: 34px; display: flex; cursor: pointer;">
+         style="height: 40px; line-height: 40px; padding-left: 58px; padding-right: 24px;display: flex; cursor: pointer;">
+      <!-- <div matRipple style="position: absolute; left: 0px; width: 100%; height: 40px;"></div> -->
       <div>
         {{ eventForm.get('standardEndDate')?.value | date:'longDate':undefined:'fr-FR' }}
       </div>
       <div *ngIf="!eventForm.get('isAllDayEvent')?.value" style="margin-left: auto;">
         {{ eventForm.get('standardEndDate')?.value | date:'HH:mm':undefined:'fr-FR' }}
       </div>
-      <mat-form-field appearance="fill" style="position: absolute; visibility: hidden;">
+      <mat-form-field appearance="fill" style="position: absolute; top: -160px; visibility: hidden;">
         <mat-label>Fin</mat-label>
         <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choisir une date"
-              formControlName="standardEndDate"
-              (dateChange)="onEndDateChange($any($event))">
+               formControlName="standardEndDate"
+               (dateChange)="onEndDateChange($any($event))">
         <mat-datepicker-toggle #toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #picker2 [enableMeridian]="false" [touchUi]="false"></ngx-mat-datetime-picker>
         <mat-error>{{ eventForm.get('standardEndDate')?.errors | json }}</mat-error>
@@ -94,7 +94,7 @@
   <mat-divider></mat-divider>
 
   <!-- Users Emails -->
-  <div class="usersEmails" style="display: flex; align-items: center;">
+  <div class="usersEmails" style="display: flex; align-items: center; padding-left: 24px; padding-right: 24px;">
     <mat-icon aria-hidden="false" aria-label="Horloge icon" style="margin-right: 10px;">people</mat-icon>
     <mat-form-field appearance="standard" style="flex: 1;">
       <mat-label>Les parents / schtroumpfs concernés</mat-label>
@@ -112,24 +112,29 @@
   <mat-divider></mat-divider>
 
   <!-- Reminders -->
-  <div class="reminders" style="position: relative;">
-    <div class="display" style="display: flex; align-items: center;">
-      <mat-icon aria-hidden="false" aria-label="Rappel icon" style="align-self: start; margin-right: 10px; margin-top: 8px;">notifications_none</mat-icon>
-      <div style="flex: 1; display: flex; flex-direction: column;">
-        <div *ngFor="let reminder of eventForm.get('reminders')?.value"
-             style="height: 40px; line-height: 40px; display: flex; align-items: center; cursor: pointer;">
-          <div (click)="notifs.open()" matRipple
-               style="height: 100%; width: 100%;">
-            {{ reminder.durationHumanized }}
-          </div>
-          <mat-icon (click)="removeReminder(reminder)" aria-hidden="false" aria-label="clear" style="margin-left: auto;">clear</mat-icon>
-        </div>
-        <div *ngIf="eventForm.get('reminders')?.value.length === 0" matRipple
-             (click)="notifs.open()"
-             style="height: 40px; line-height: 40px; display: flex; align-items: center; cursor: pointer;">
-             <div>Ajouter un rappel</div>
-        </div>
+  <div class="reminders">
+    <div *ngIf="eventForm.get('reminders')?.value.length === 0"
+         (click)="notifs.open()"
+         style="height: 40px; line-height: 40px; display: flex; align-items: center; cursor: pointer; padding-left: 24px; padding-right: 24px;">
+      <mat-icon aria-hidden="false" aria-label="Rappel icon"
+                style="align-self: start; margin-right: 10px; margin-top: 8px;">
+        notifications_none
+      </mat-icon>
+      <div>Ajouter un rappel</div>
+    </div>
+    <div *ngFor="let reminder of eventForm.get('reminders')?.value; let i = index;"
+         (click)="notifs.open()"
+         style="height: 40px; line-height: 40px; display: flex; align-items: center; cursor: pointer; padding-left: 24px; padding-right: 24px;">
+      <mat-icon aria-hidden="false" aria-label="Rappel icon"
+                style="align-self: start; margin-right: 10px; margin-top: 8px;"
+                *ngIf="i === 0">
+        notifications_none
+      </mat-icon>
+      <div style="height: 100%; width: 100%;"
+           [style.padding-left]="i === 0 ? '0px' : '34px'">
+        {{ reminder.durationHumanized }}
       </div>
+      <mat-icon (click)="removeReminder(reminder)" aria-hidden="false" aria-label="clear" style="margin-left: auto; z-index: 1;">clear</mat-icon>
     </div>
     <mat-form-field appearance="fill" style="position: absolute; visibility: hidden;">
       <mat-label>Rappel(s)</mat-label>
@@ -144,7 +149,7 @@
   <mat-divider></mat-divider>
 
   <!-- Color -->
-  <div class="color">
+  <div class="color" style="padding-left: 24px; padding-right: 24px;">
     <mat-form-field appearance="fill" style="width: 100%;">
       <mat-label>Couleur</mat-label>
       <mat-select formControlName="color" [class]="eventForm.get('color')?.value">
@@ -158,7 +163,7 @@
   </div>
 
   <!-- Category -->
-  <div class="category">
+  <div class="category" style="padding-left: 24px; padding-right: 24px;">
     <mat-form-field appearance="fill" style="width: 100%;">
       <mat-label>Catégorie</mat-label>
       <mat-select formControlName="category">
@@ -174,13 +179,13 @@
   <pre style="font-size:15px">{{ unixEndDate }}</pre> -->
   <!-- Debug form END -->
 
-  <button mat-flat-button color="primary" aria-label="submit"
+  <!-- <button mat-flat-button color="primary" aria-label="submit"
           (click)=save()
           [disabled]="!eventForm.valid || submitLoadingSpinner"
           [class.mc-spinner]="submitLoadingSpinner"
           class="submit"
           style="float: right;">
     Enregistrer
-  </button>
+  </button> -->
 
 </form>

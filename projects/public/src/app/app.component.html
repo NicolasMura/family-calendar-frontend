@@ -1,31 +1,31 @@
 <div class="app-root">
-  <mat-sidenav-container>
+  <mat-sidenav-container style="background-color: white;">
     <mat-sidenav #sidenav mode="over"
                  [fixedInViewport]="true">
       <mat-nav-list *ngIf="currentUser$ | async">
-        <a mat-list-item (click)="sidenav.toggle(); logout()">Logout</a>
-        <a mat-list-item (click)="sidenav.toggle(); goToMainCalendar();">Semaine familiale</a>
-        <a mat-list-item (click)="sidenav.toggle();">Mois familial (soon...)</a>
-        <a mat-list-item (click)="sidenav.toggle(); goToSettings();">Settings (soon...)</a>
-        <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.askForNotificationPermission()">Ask for Push Notification Permission</a>
-        <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.displayConfirmNotification()">Test Push Notification</a>
-        <a mat-list-item disabled>V17</a>
+        <a mat-list-item (click)="sidenav.toggle(); goToMainCalendar();"><mat-icon style="margin-right: 10px;">event_note</mat-icon>Semaine familiale</a>
+        <a mat-list-item (click)="sidenav.toggle();" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Mois familial (soon...)</a>
+        <a mat-list-item (click)="sidenav.toggle(); goToSettings();" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Settings (soon...)</a>
+        <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.askForNotificationPermission()" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Ask for Push Notif. Perm.</a>
+        <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.displayConfirmNotification()" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Test Push Notification</a>
+        <a mat-list-item disabled *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">V17</a>
+        <a mat-list-item (click)="sidenav.toggle(); logout()"><mat-icon style="margin-right: 10px;">logout</mat-icon>Déconnexion</a>
       </mat-nav-list>
     </mat-sidenav>
 
     <mat-sidenav-content>
-      <mat-toolbar color="primary" *ngIf="currentUser$ | async">
+      <mat-toolbar color="primary" *ngIf="currentUser$ | async" style="background-color: white; color: #2E2E2E;">
         <button mat-icon-button (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
         <!-- <h1>{{ (currentMoment$ | async)?.month() }} - V17</h1> -->
-        <h1>{{ currentMonth | titlecase }} - <span *ngIf="weekNumber">S{{ weekNumber }}</span></h1>
+        <h1 style="margin-left: 10px; font-size: 24px; display: flex;">{{ currentMonth | titlecase }}</h1><span *ngIf="weekNumber" style="font-size: 10px; margin-left: 5px;">(S{{ weekNumber }})</span>
         <span style="flex: 1 1 auto;"></span>
         <button mat-icon-button (click)="refreshApp()">
           <mat-icon>refresh</mat-icon>
         </button>
         <button mat-icon-button *ngIf="router.url.split('?')[0] === '/';" (click)="goToToday()">
-          <mat-icon>event</mat-icon>
+          <mat-icon>today</mat-icon>
         </button>
       </mat-toolbar>
 

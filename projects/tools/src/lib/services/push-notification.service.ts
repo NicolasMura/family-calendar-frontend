@@ -12,6 +12,7 @@ import { NotificationService } from 'projects/tools/src/lib/services/notificatio
 /**
  * Push Notifications Service
  * Providing user permission, user susbscription management and display notification utilities
+ * https://github.com/dotnet-presentations/blazor-workshop/blob/master/src/BlazingPizza.ComponentsLibrary/wwwroot/pushNotifications.js
  */
 @Injectable({
   providedIn: 'root'

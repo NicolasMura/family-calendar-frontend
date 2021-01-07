@@ -99,7 +99,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
       console.log('current version is', event.current);
       console.log('available version is', event.available);
 
-      this.notificationService.sendNotification('New version available. Load New Version?', 'OK')
+      this.notificationService.sendNotification('Nouvelle version disponible ! Mettre à jour ?', 'OK')
         .onAction().subscribe(() => {
           window.location.reload();
         });
