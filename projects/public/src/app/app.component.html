@@ -5,7 +5,8 @@
       <mat-nav-list *ngIf="currentUser$ | async">
         <a mat-list-item (click)="sidenav.toggle(); goToMainCalendar();"><mat-icon style="margin-right: 10px;">event_note</mat-icon>Semaine familiale</a>
         <a mat-list-item (click)="sidenav.toggle();" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Mois familial (soon...)</a>
-        <a mat-list-item (click)="sidenav.toggle(); goToSettings();" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Settings (soon...)</a>
+        <!-- <a mat-list-item (click)="sidenav.toggle(); goToSettings();" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Settings (soon...)</a> -->
+        <a mat-list-item (click)="sidenav.toggle(); goToSettings();">Prénoms :)</a>
         <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.askForNotificationPermission()" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Ask for Push Notif. Perm.</a>
         <a mat-list-item (click)="sidenav.toggle()" (click)="pushNotificationService.displayConfirmNotification()" *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">Test Push Notification</a>
         <a mat-list-item disabled *ngIf="(currentUser$ | async)?.email === 'nicolas.mura@gmail.com'">V17</a>

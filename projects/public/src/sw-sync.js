@@ -51,8 +51,11 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.content,
-    icon: 'images/icons/app-icon-96x96.png',
-    badge: 'images/icons/app-icon-96x96.png',
+    // icon: '/assets/icons/icon-24x24.png',
+    // icon: 'https://family-calendar.nicolasmura.com/assets/icons/icon-24x24.png',
+    icon: 'https://family-calendar.nicolasmura.com/assets/icons/icon-96x96.png',
+    // badge: 'images/icons/app-icon-96x96.png',
+    vibrate: [100, 50, 100],
     data: {
       url: data.openUrl
     }

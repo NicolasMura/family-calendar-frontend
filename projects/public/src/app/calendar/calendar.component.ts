@@ -562,6 +562,15 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Returns true if day is today, false otherwise
+   * @TODO: à améliorer car s'applique à tous les mois actuellement... :)
+   */
+  public isToday(day: Day): boolean {
+    const today: moment.Moment = moment();
+    return day.momentObject.get('date') === today.get('date') && day.momentObject.get('date') === today.get('date') && day.momentObject.get('date') === today.get('date');
+  }
+
+  /**
    * Returns number of @param user's events in a given @param day
    */
   public getDayEventsForUser(day: Day, user: User): number {

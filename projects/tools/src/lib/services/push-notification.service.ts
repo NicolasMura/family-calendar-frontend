@@ -48,7 +48,7 @@ export class PushNotificationService extends GlobalService {
             // console.log(subscriptions);
             for (const subscription in subscriptions) {
               if (subscriptions.hasOwnProperty(subscription)) {
-                console.log(subscriptions[subscription]);
+                // console.log(subscriptions[subscription]);
               }
             }
           });

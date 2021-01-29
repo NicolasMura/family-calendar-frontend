@@ -26,7 +26,7 @@
         <!-- Day name -->
         <div class="details"
              style="flex: 1 1 0px;">
-          <div class="number">{{ day.nb }}</div>
+          <div class="number" [ngClass]="{'today': isToday(day)}">{{ day.nb }}</div>
           <div class="label">{{ day.label | titlecase }}</div>
         </div>
 
@@ -39,7 +39,7 @@
           <div class="event" *ngFor="let event of day.events | eventsFilter:{user: user, childrenEmails: userService.childrenEmails}; let i = index;"
                (click)="openEventDetailDialog(event);"
                [class]="'bg hoverable ' + event.color"
-               style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px;; cursor: pointer;"
+               style="width: calc(100% - 10px); max-height: 22px; margin-bottom: 3px; border-radius: 5px; cursor: pointer; font-size: 12px; color: white;"
                [style.display]="i < 2 ? 'block' : 'none'">
             <div *ngIf="i < 2"
                  class="label"
@@ -55,8 +55,8 @@
                   *ngIf="getDayEventsForUser(day, user) > 2"
                   (click)="showMoreEvents(day, user)"
                   class="more_events"
-                  style="height: 22px; line-height: 22px; color: rgb(63, 81, 181);">
-            <mat-icon>more_horiz</mat-icon><span>+{{ getDayEventsForUser(day, user) - 2 }}</span>
+                  style="height: 18px; line-height: 18px; color: rgb(63, 81, 181);">
+            <span>+{{ getDayEventsForUser(day, user) - 2 }}</span>
           </button>
         </div>
 

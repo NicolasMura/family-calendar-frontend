@@ -45,10 +45,6 @@ export class EventDialogComponent implements OnInit {
    */
   public submitLoadingSpinner = false;
   /**
-   * Current timestamp date to be compared to banner notification endDate to make it visible or not
-   */
-  todayTimestamp = Math.round(new Date().valueOf() / 1000).toString();
-  /**
    * Event start date in standard Date format (ex.: '9/4/2020, 16:45:16') for DateTime Picker
    */
   standardStartDate: Date | undefined;

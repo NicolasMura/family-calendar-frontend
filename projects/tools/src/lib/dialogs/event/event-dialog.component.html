@@ -59,7 +59,7 @@
       <div *ngIf="!eventForm.get('isAllDayEvent')?.value" style="margin-left: auto;">
         {{ eventForm.get('standardStartDate')?.value | date:'HH:mm':undefined:'fr-FR' }}
       </div>
-      <mat-form-field appearance="fill" style="position: absolute; top: -160px; visibility: hidden;">
+      <mat-form-field appearance="fill" style="position: absolute; top: -220px; left: 20px; visibility: hidden;">
         <mat-label>Début</mat-label>
         <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisir une date"
                formControlName="standardStartDate"
@@ -79,7 +79,7 @@
       <div *ngIf="!eventForm.get('isAllDayEvent')?.value" style="margin-left: auto;">
         {{ eventForm.get('standardEndDate')?.value | date:'HH:mm':undefined:'fr-FR' }}
       </div>
-      <mat-form-field appearance="fill" style="position: absolute; top: -160px; visibility: hidden;">
+      <mat-form-field appearance="fill" style="position: absolute; top: -220px; left: 20px; visibility: hidden;">
         <mat-label>Fin</mat-label>
         <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choisir une date"
                formControlName="standardEndDate"

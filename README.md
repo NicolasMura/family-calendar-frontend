@@ -32,3 +32,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
   * Splashscreen
   * CI avec Harness (https://harness.io/)
   * Cache icons
+  * Move subscriptions to Push Notification from Firebase (Realtime Database) to nicolasmura.com

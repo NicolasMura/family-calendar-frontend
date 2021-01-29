@@ -19,7 +19,8 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
       if (request.url.indexOf('auth/login') > 0 ||
         request.url.indexOf('auth/signup') > 0 ||
-        request.url.indexOf('management/is-in-maintenance') > 0 || !this.authService.getToken()) {
+        request.url.indexOf('management/is-in-maintenance') > 0 || !this.authService.getToken() ||
+        request.url.indexOf('opendata.paris.fr') > 0) {
         return next.handle(request); // do nothing
       }
 

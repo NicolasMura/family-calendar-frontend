@@ -26,6 +26,14 @@ $margin: 15px;
       font-family: 'PTSans-Regular';
       font-size: 16px;
       font-weight: 400;
+
+      &.today {
+        width: fit-content;
+        background-color: #7986cb;
+        outline: 3px solid #7986cb;
+        outline-style: inset;
+        color: white;
+      }
     }
 
     .label {

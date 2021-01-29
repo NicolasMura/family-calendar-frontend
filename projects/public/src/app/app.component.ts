@@ -71,6 +71,23 @@ export class AppComponent implements OnInit, AfterViewChecked {
   ) {
     // this.buildInfo = buildInfo;
 
+    // try to lock screen orientation to portrait mode (not supported in Safari & iOS)
+    console.log('try to lock screen orientation to portrait mode');
+    const screenOrientation = window.screen.orientation;
+    console.log(screenOrientation);
+    if (screenOrientation) {
+      screenOrientation.lock('portrait')
+        .then(res => {
+          console.log(res);
+        })
+        .catch(error => console.log(error));
+    } else {
+      console.log('window.screen.orientation not available... snif...');
+      document.addEventListener('orientationchange', (bob) => {
+        console.log(bob);
+      });
+    }
+
     // use fr locale for moment
     moment.locale('fr');
 
