@@ -4,6 +4,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { LoginComponent } from './login/login.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AuthGuard } from 'projects/tools/src/lib/guards/auth.guard';
+import { SomethingIsBrokenComponent } from 'projects/tools/src/lib/components/something-is-broken/something-is-broken.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,10 @@ const routes: Routes = [
     path: 'settings',
     component: SettingsComponent,
     canActivate: [ AuthGuard ]
+  },
+  {
+    path: '**',
+    component: SomethingIsBrokenComponent
   }
 ];
 

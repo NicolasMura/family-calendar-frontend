@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
         this.loginLoadingSpinner = false;
         this.loginError = true;
         this.enableLoginForm();
-        const userErrorMsg = error.message ? error.message : 'Erreur inconnue (connexion impossible)';
+        const userErrorMsg = error.message ? error.message + ' (connexion impossible)' : 'Erreur inconnue (connexion impossible)';
         this.notificationService.sendNotification(userErrorMsg, '', { panelClass: 'notification-login-by-username-error' });
       });
     }

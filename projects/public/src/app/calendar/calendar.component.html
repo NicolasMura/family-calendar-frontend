@@ -10,12 +10,13 @@
 <swiper #weeksSwiper class="swiper-container" *ngIf="userService.users"
         [config]="config"
         [(index)]="sliderIndex"
-        [disabled]="isSliderDisabled"
         (indexChange)="onIndexChange($event)"
         (slideChangeTransitionEnd)="onSlideChangeTransitionEnd($event)">
   <!-- Weeks loop -->
-  <div *ngFor="let weekSlide of calendarEventService.weeksSlides"
-       class="swiper-slide" style="display: flex; flex-direction: column;">
+  <ng-template swiperSlide *ngFor="let weekSlide of calendarEventService.weeksSlides"
+               class="swiper-slide" style="display: flex; flex-direction: column;">
+  <!-- <div *ngFor="let weekSlide of calendarEventService.weeksSlides"
+       class="swiper-slide" style="display: flex; flex-direction: column;"> -->
     <div class="week"
          style="height: 100%; /*padding: 0px 10px;*/ display: flex; flex-direction: column; justify-content: space-around;">
       <!-- Days loop -->
@@ -62,7 +63,8 @@
 
       </div>
     </div>
-  </div>
+  <!-- </div> -->
+  </ng-template>
 </swiper>
 
 <button mat-fab color="primary" aria-label="Create event"

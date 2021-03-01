@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     private calendarEventService: CalendarEventService,
     public pushNotificationService: PushNotificationService,
     private notificationService: NotificationService,
-    private webSocketService: WebSocketService,
+    public webSocketService: WebSocketService,
     private utilitiesService: UtilitiesService
   ) {
     // this.buildInfo = buildInfo;

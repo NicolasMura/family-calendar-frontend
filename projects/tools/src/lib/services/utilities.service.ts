@@ -137,4 +137,33 @@ export class UtilitiesService extends GlobalService {
     }
     this.notificationService.sendNotification('Copié !');
   }
+
+  /**
+   * Test if a translation exists, returns true if yes, false otherwise
+   * Ex., cf. src/assets/i18n/en.json :
+   * ```json
+   * ...
+   * "subscription": {
+   *   "property": {
+   *     ...
+   *     "startDate": {
+   *       "label": "created at"
+   *     },
+   *     ...
+   *   }
+   * }
+   * ...
+   * ```
+   *
+   * testTranslationKey('subscription.property.startDate') => instant(translationKey) = {"label": "created at"}
+   * =>  !== 'startDate'
+   * => returns true
+   * testTranslationKey('subscription.property.bob' => instant(translationKey) = 'subscription.property.bob'
+   * =>  === 'subscription.property.bob'
+   * => returns false
+   *
+   */
+  testTranslationKey(translationKey: string): any {
+    // return !(this.translateService.instant(translationKey) === translationKey);
+  }
 }

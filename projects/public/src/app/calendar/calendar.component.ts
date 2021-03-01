@@ -1,9 +1,9 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, HostListener } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
-import { SwiperEvent } from 'ngx-swiper-wrapper/lib/swiper.interfaces';
+// import { SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
+// import { SwiperEvent } from 'ngx-swiper-wrapper/lib/swiper.interfaces';
 import { Observable } from 'rxjs';
 import { catchError, first, skip, tap } from 'rxjs/operators';
 import * as moment from 'moment';
@@ -16,8 +16,8 @@ import { CalendarEvent } from 'projects/tools/src/lib/models/calendar-event.mode
 import { Week } from 'projects/tools/src/lib/models/week.model';
 import { Day } from 'projects/tools/src/lib/models/day.model';
 import { WebSocketMessage } from 'projects/tools/src/lib/models/websocket-message.model';
-import { EventData, EventDialogComponent } from 'projects/tools/src/lib/dialogs/event/event-dialog.component';
-import { ShowMoreEventsData, ShowMoreEventsDialogComponent } from 'projects/tools/src/lib/dialogs/event/show-more-events-dialog.component';
+import { EventData, EventDialogComponent } from 'projects/tools/src/lib/components/dialogs/event/event-dialog.component';
+import { ShowMoreEventsData, ShowMoreEventsDialogComponent } from 'projects/tools/src/lib/components/dialogs/event/show-more-events-dialog.component';
 import { environment } from 'projects/tools/src/environments/environment';
 
 
@@ -34,7 +34,8 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   /**
    * Slider Swiper configuration
    */
-  public config: SwiperConfigInterface = {
+  // public config: SwiperConfigInterface = {
+  public config: any = {
     direction: 'horizontal',
     slidesPerView: 1,
     keyboard: true,
@@ -50,11 +51,11 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   /**
    * Slider Swiper disabled state
    */
-  public isSliderDisabled = false;
+  // public isSliderDisabled = false;
   /**
    * Reference to slider
    */
-  @ViewChild(SwiperDirective, { static: false }) private swiperDirectiveRef?: SwiperDirective;
+  // @ViewChild(SwiperDirective, { static: false }) private swiperDirectiveRef?: SwiperDirective;
   /**
    * Reference to event dialog
    */
@@ -189,8 +190,26 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     // @TODO : à priori ne sert à rien, voir comment faire mieux pour iOS
     setTimeout(() => {
       // this.swiperDirectiveRef?.update();
-      this.swiperDirectiveRef?.init();
+      // this.swiperDirectiveRef?.init();
     }, 100);
+  }
+
+  /**
+   * Scan for CTRL + F event
+   * Scan for CTRL + SUPPR event
+   */
+  @HostListener('window:keydown', ['$event'])
+  onKeyPress($event: KeyboardEvent): void {
+    if (($event.ctrlKey || $event.metaKey) && $event.code === 'KeyF') {
+      $event.preventDefault(); // to prevent the browser from opening its own default search box
+      // @TODO...
+    }
+    if (($event.ctrlKey || $event.metaKey) && $event.code === 'Delete') {
+      // @TODO...
+    }
+    if (($event.ctrlKey || $event.metaKey) && $event.code === 'KeyT') {
+      console.log($event);
+    }
   }
 
   /**
@@ -334,7 +353,8 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   /**
    * @TODO
    */
-  public onSlideChangeTransitionEnd(event: SwiperEvent): void {
+  // public onSlideChangeTransitionEnd(event: SwiperEvent): void {
+  public onSlideChangeTransitionEnd(event: any): void {
     // console.log('onSlideChangeTransitionEnd');
 
     // update currentMoment

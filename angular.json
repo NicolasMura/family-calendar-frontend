@@ -70,6 +70,35 @@
               ],
               "serviceWorker": true,
               "ngswConfigPath": "projects/public/ngsw-config.json"
+            },
+            "demo": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/tools/src/environments/environment.ts",
+                  "with": "projects/tools/src/environments/environment.demo.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "projects/public/ngsw-config.json"
             }
           }
         },
@@ -81,6 +110,9 @@
           "configurations": {
             "production": {
               "browserTarget": "public:build:production"
+            },
+            "demo": {
+              "browserTarget": "public:build:demo"
             }
           }
         },
@@ -137,6 +169,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "public:serve:production"
+            },
+            "demo": {
+              "devServerTarget": "public:serve:demo"
             }
           }
         }
@@ -156,6 +191,9 @@
           },
           "configurations": {
             "production": {
+              "tsConfig": "projects/tools/tsconfig.lib.prod.json"
+            },
+            "demo": {
               "tsConfig": "projects/tools/tsconfig.lib.prod.json"
             }
           }
@@ -196,6 +234,9 @@
           },
           "configurations": {
             "production": {
+              "tsConfig": "projects/vendor/tsconfig.lib.prod.json"
+            },
+            "demo": {
               "tsConfig": "projects/vendor/tsconfig.lib.prod.json"
             }
           }

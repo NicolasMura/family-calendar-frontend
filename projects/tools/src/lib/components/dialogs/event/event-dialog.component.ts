@@ -120,20 +120,22 @@ export class EventDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const event: CalendarEvent = new CalendarEvent('', '', '', [], [], '', '', '', '');
+    // let event: CalendarEvent = new CalendarEvent('', '', '', [], [], '', '', '', '');
+    let event: CalendarEvent = null as any;
 
     if (this.data.existingEvent) {
-      event.title = this.data.existingEvent.title;
-      event.startDate = this.data.existingEvent.startDate;
-      event.endDate = this.data.existingEvent.endDate;
-      event.usersEmails = this.data.existingEvent.usersEmails;
-      event.reminders = this.data.existingEvent.reminders;
-      event.color = this.data.existingEvent.color;
-      event.category = this.data.existingEvent.category;
-      event.humanStartDate = this.data.existingEvent.humanStartDate;
-      event.humanEndDate = this.data.existingEvent.humanEndDate;
-      event._id = this.data.existingEvent._id;
-      event._deleted = this.data.existingEvent._deleted;
+      // event.title = this.data.existingEvent.title;
+      // event.startDate = this.data.existingEvent.startDate;
+      // event.endDate = this.data.existingEvent.endDate;
+      // event.usersEmails = this.data.existingEvent.usersEmails;
+      // event.reminders = this.data.existingEvent.reminders;
+      // event.color = this.data.existingEvent.color;
+      // event.category = this.data.existingEvent.category;
+      // event.humanStartDate = this.data.existingEvent.humanStartDate;
+      // event.humanEndDate = this.data.existingEvent.humanEndDate;
+      // event._id = this.data.existingEvent._id;
+      // event._deleted = this.data.existingEvent._deleted;
+      event = new CalendarEvent(this.data.existingEvent);
 
       console.log(event);
     }
@@ -146,15 +148,17 @@ export class EventDialogComponent implements OnInit {
       const startDate = moment(start).add(remaindingTime, 'minute');
       const endDate = moment(start).add(remaindingTime + 120, 'minute');
 
-      event.title = '';
-      event.startDate = startDate.unix().toString();
-      event.endDate = endDate.clone().unix().toString();
-      event.usersEmails = this.data.newEvent.users ? this.data.newEvent.users.map((user: User) => user.email) : [];
-      event.reminders = [moment.duration({ hours: 2 }).asMilliseconds().toString()];
-      event.color = 'blue';
-      event.category = '';
-      event.humanStartDate = moment().format('YYYY-MM-DDTHH:mm:ssZ');
-      event.humanEndDate = moment().format('YYYY-MM-DDTHH:mm:ssZ');
+      event = new CalendarEvent({
+        title: '',
+        startDate: startDate.unix().toString(),
+        endDate: endDate.clone().unix().toString(),
+        usersEmails: this.data.newEvent.users ? this.data.newEvent.users.map((user: User) => user.email) : [],
+        reminders: [moment.duration({ hours: 2 }).asMilliseconds().toString()],
+        color: 'blue',
+        category: '',
+        humanStartDate: moment().format('YYYY-MM-DDTHH:mm:ssZ'),
+        humanEndDate: moment().format('YYYY-MM-DDTHH:mm:ssZ')
+      });
 
       console.log(event);
     }
@@ -272,21 +276,20 @@ export class EventDialogComponent implements OnInit {
   public save(): void {
     if (this.eventForm.valid) {
       this.submitLoadingSpinner = true;
-      const event = new CalendarEvent(
-        this.eventForm.get('title')?.value,
-        // this.eventForm.get('startDate')?.value,
-        this.unixStartDate as string,
-        this.unixEndDate as string,
-        this.eventForm.get('usersEmails')?.value,
-        this.eventForm.get('reminders')?.value.map((reminder: { duration: number, durationHumanized: string }) => {
+      const event = new CalendarEvent({
+        title: this.eventForm.get('title')?.value,
+        startDate: this.unixStartDate as string,
+        endDate: this.unixEndDate as string,
+        usersEmails: this.eventForm.get('usersEmails')?.value,
+        reminders: this.eventForm.get('reminders')?.value.map((reminder: { duration: number, durationHumanized: string }) => {
           return reminder.duration.toString();
         }),
-        this.eventForm.get('color')?.value,
-        this.eventForm.get('category')?.value,
-        moment.unix(Number(this.unixStartDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-        moment.unix(Number(this.unixEndDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-        this.data.existingEvent ? this.data.existingEvent._id : ''
-      );
+        color: this.eventForm.get('color')?.value,
+        category: this.eventForm.get('category')?.value,
+        humanStartDate: moment.unix(Number(this.unixStartDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+        humanEndDate: moment.unix(Number(this.unixEndDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+        _id: this.data.existingEvent ? this.data.existingEvent._id : ''
+      });
 
       if (this.data.existingEvent) {
         this.update(event);

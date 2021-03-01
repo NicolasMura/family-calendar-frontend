@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { LocalStorageService } from 'ngx-webstorage';
 import { LocalStorage } from 'ngx-webstorage';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { delay, catchError, map, tap } from 'rxjs/operators';
+import { delay, catchError, map, tap, timeout } from 'rxjs/operators';
 import jwt_decode from 'jwt-decode';
 import { environment } from 'projects/tools/src/environments/environment';
 import { CoreConstants } from 'projects/tools/src/lib/core-constants';
@@ -67,14 +67,17 @@ export class AuthService extends GlobalService {
     if (existingToken) {
       // if token exists and is valid, start session
       if (!this.isTokenExpired(existingToken)) {
+        console.log('checkForExistingToken - success login with valid existing token');
         this.startSession(existingToken);
       } else {
+        console.log('checkForExistingToken - failed to login: got existing token, but expired');
         // if token is expired, we must cancel session + clear local storage to get a chance to start session next time we login
-        this.cancelSession();
+        this.logout();
         const expirationNotif = this.notificationService.sendNotification('@TODO', '', { duration: 0 });
       }
     } else {
       // got no token, do nothing
+      console.log('checkForExistingToken - no token information');
     }
 
   }
@@ -91,6 +94,7 @@ export class AuthService extends GlobalService {
     return this.http.post<LoginResponse>(url, body)
       .pipe(
         // delay(1000),
+        timeout(10000),
         tap((loginResponse: LoginResponse) => this.startSession(loginResponse.token)),
         catchError(error => this.handleError(error))
       );
@@ -119,6 +123,9 @@ export class AuthService extends GlobalService {
     this.cancelSession();
   }
 
+  /**
+   * Start session
+   */
   public startSession(token: string): void {
     this.tokenLocalStorage = token;
     this.authStore.token = token;
@@ -126,6 +133,9 @@ export class AuthService extends GlobalService {
     this.userService.setCurrentUser(jwt_decode(token));
   }
 
+  /**
+   * Cancel session
+   */
   public cancelSession(): void {
     this.localStorageService.clear();
     this.authStore.token = null;
@@ -134,6 +144,9 @@ export class AuthService extends GlobalService {
     this.router.navigate([CoreConstants.routePath.login]);
   }
 
+  /**
+   * Get token
+   */
   public getToken(): string | null {
     if (this.tokenLocalStorage) {
       return this.tokenLocalStorage;
@@ -141,6 +154,9 @@ export class AuthService extends GlobalService {
     return this.token.getValue();
   }
 
+  /**
+   * Test if token is expired
+   */
   public isTokenExpired(token: string | null): boolean {
     if (!token) { return true; }
 
@@ -155,6 +171,9 @@ export class AuthService extends GlobalService {
     return !(date.valueOf() > new Date().valueOf());
   }
 
+  /**
+   * Utility to get token expiration JavaScript date
+   */
   public getTokenExpirationDate(token: string): Date | null {
     const userDecoded: { email: string, iat: number, exp: number } | null = jwt_decode(token);
 

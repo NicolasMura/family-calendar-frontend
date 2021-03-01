@@ -26,6 +26,32 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
+## Dockerization
+
+```bash
+  cd (...)/family-calendar
+  docker build -t family-calendar-frontend -f ./frontend/Dockerfile ./frontend
+  docker stop family-calendar-frontend
+  docker run --rm --name family-calendar-frontend \
+    -dp 4200:80 \
+    family-calendar-frontend
+  docker logs family-calendar-frontend
+  docker tag family-calendar-frontend nicolasmura/family-calendar-frontend
+  docker push nicolasmura/family-calendar-frontend
+
+  # Start / stop the container with its name
+  docker start family-calendar-frontend
+  docker stop family-calendar-frontend
+
+  # Running our Image on a New Instance
+  docker run --rm --name family-calendar-frontend -dp 4200:80 nicolasmura/family-calendar-frontend
+
+  # Start up the whole application (front + back + mongodb) stack using the docker-compose
+  docker-compose up
+  docker-compose up -d
+  docker-compose up -d --build
+```
+
 ## TODO
 
   * Icons iOS + message for landscape mode (ex.: not supported)

@@ -42,6 +42,10 @@ export class WebSocketService implements OnDestroy {
    * Expose the observable$ part of the needToFetchEvents subject (read only stream)
    */
   public readonly needToFetchEvents$: Observable<boolean> = this.needToFetchEventsSubject.asObservable();
+  /**
+   * Used to display error message to user
+   */
+  public lostConnection = false;
 
   public connect(cfg: { reconnect: boolean } = { reconnect: false }): void {
 
@@ -54,6 +58,7 @@ export class WebSocketService implements OnDestroy {
             tap(err => {
               console.error('Got error', err);
               console.log('[WebSocketService] (connect()) Try to reconnect');
+              this.lostConnection = true;
             }),
             delay(RECONNECT_INTERVAL)
           )
@@ -73,19 +78,20 @@ export class WebSocketService implements OnDestroy {
       .subscribe((msg: WebSocketMessage) => {
         console.log(msg);
         if (msg.data && msg.data.type === 'event') {
-          const eventWellFormatted = new CalendarEvent(
-            msg.data.content.title,
-            msg.data.content.startDate,
-            msg.data.content.endDate,
-            msg.data.content.usersEmails,
-            msg.data.content.reminders,
-            msg.data.content.color,
-            msg.data.content.category,
-            msg.data.content.humanStartDate || moment.unix(Number(msg.data.content.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            msg.data.content.humanEndDate || moment.unix(Number(msg.data.content.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            msg.data.content._id,
-            msg.data.content._deleted
-          );
+          const eventWellFormatted = new CalendarEvent({
+            title: msg.data.content.title,
+            startDate: msg.data.content.startDate,
+            endDate: msg.data.content.endDate,
+            usersEmails: msg.data.content.usersEmails,
+            reminders: msg.data.content.reminders,
+            color: msg.data.content.color,
+            category: msg.data.content.category,
+            humanStartDate: msg.data.content.humanStartDate
+              || moment.unix(Number(msg.data.content.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            humanEndDate: msg.data.content.humanEndDate || moment.unix(Number(msg.data.content.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            _id: msg.data.content._id,
+            _deleted: msg.data.content._deleted
+          });
           this.messageSubject.next(eventWellFormatted);
         }
       });
@@ -107,12 +113,14 @@ export class WebSocketService implements OnDestroy {
             console.log('Connexion réussie => pas besoin de récupérer des events');
             this.needToFetchEvents = true;
           }
+          this.lostConnection = false;
         }
       },
       // intercepts the closure event
       closeObserver: {
         next: () => {
           console.log('[WebSocketService (getNewWebSocket())]: connection closed');
+          this.lostConnection = true;
         }
       },
     });

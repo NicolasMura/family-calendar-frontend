@@ -11,7 +11,8 @@ import {
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
 } from '@angular/material-moment-adapter';
 import { NgxWebstorageModule } from 'ngx-webstorage';
-import { SwiperModule, SwiperConfigInterface, SWIPER_CONFIG } from 'ngx-swiper-wrapper';
+import { SwiperModule } from 'swiper/angular';
+// import { SwiperModule, SwiperConfigInterface, SWIPER_CONFIG } from 'ngx-swiper-wrapper';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent, IosInstallComponent } from './app.component';
 import { ToolsModule } from 'projects/tools/src/public-api';
@@ -30,7 +31,8 @@ import { CommonModule, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 registerLocaleData(localeFr, 'fr');
 
-const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
+// const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
+const DEFAULT_SWIPER_CONFIG: any = {
   observer: true,
   direction: 'horizontal',
   threshold: 50,
@@ -70,10 +72,10 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
       useClass: TokenInterceptor,
       multi: true
     },
-    {
-      provide: SWIPER_CONFIG,
-      useValue: DEFAULT_SWIPER_CONFIG
-    },
+    // {
+    //   provide: SWIPER_CONFIG,
+    //   useValue: DEFAULT_SWIPER_CONFIG
+    // },
     {
       provide: WINDOW,
       useFactory: () => window

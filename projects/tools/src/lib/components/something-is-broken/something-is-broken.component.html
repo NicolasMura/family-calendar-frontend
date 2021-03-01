@@ -1,0 +1,15 @@
+<div class="something-is-broken" @fadeInOutAnimation>
+  <div class="message">
+    <div class="mc-color-primary">Oops!</div>
+    <!-- <p>{{ 'common.somethingIsBroken' | translate }}.</p> -->
+    <p>On dirait que quelque chose est cassé.</p>
+    <div *ngIf="statusCode" class="status">
+      <div class="status-code mc-color-primary">{{ statusCode }}</div>
+      <!-- <div>{{ utilitiesService.testTranslationKey('error.' + statusCode + '.title') ? ('error.' + statusCode + '.title' | translate) : statusMessage }}</div> -->
+      <div>statusCode: {{ statusCode }} / statusMessage : {{ statusMessage }}</div>
+    </div>
+  </div>
+  <div>
+    <img src="/assets/images/broken-robot.png" alt="Broken robot">
+  </div>
+</div>

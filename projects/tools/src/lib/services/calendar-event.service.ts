@@ -91,18 +91,18 @@ export class CalendarEventService extends GlobalService {
       .pipe(
         // delay(1000),
         map((events: CalendarEvent[]) => {
-          const eventsWellFormatted = events.map((event: CalendarEvent) => new CalendarEvent(
-            event.title,
-            event.startDate,
-            event.endDate,
-            event.usersEmails,
-            event.reminders,
-            event.color || 'blue',
-            event.category,
-            event.humanStartDate || moment.unix(Number(event.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            event.humanEndDate || moment.unix(Number(event.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            event._id
-          ));
+          const eventsWellFormatted = events.map((event: CalendarEvent) => new CalendarEvent({
+            title: event.title,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            usersEmails: event.usersEmails,
+            reminders: event.reminders,
+            color: event.color || 'blue',
+            category: event.category,
+            humanStartDate: event.humanStartDate || moment.unix(Number(event.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            humanEndDate: event.humanEndDate || moment.unix(Number(event.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            _id: event._id
+          }));
           return eventsWellFormatted;
         }),
         catchError(error => this.handleError(error))
@@ -140,18 +140,18 @@ export class CalendarEventService extends GlobalService {
       .pipe(
         // delay(1000),
         map((newEvent: CalendarEvent) => {
-          const eventWellFormatted = new CalendarEvent(
-            newEvent.title,
-            newEvent.startDate,
-            newEvent.endDate,
-            newEvent.usersEmails,
-            newEvent.reminders,
-            newEvent.color,
-            newEvent.category,
-            newEvent.humanStartDate || moment.unix(Number(newEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            newEvent.humanEndDate || moment.unix(Number(newEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            newEvent._id
-          );
+          const eventWellFormatted = new CalendarEvent({
+            title: newEvent.title,
+            startDate: newEvent.startDate,
+            endDate: newEvent.endDate,
+            usersEmails: newEvent.usersEmails,
+            reminders: newEvent.reminders,
+            color: newEvent.color,
+            category: newEvent.category,
+            humanStartDate: newEvent.humanStartDate || moment.unix(Number(newEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            humanEndDate: newEvent.humanEndDate || moment.unix(Number(newEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            _id: newEvent._id
+          });
           return eventWellFormatted;
         }),
         catchError(error => this.handleError(error))
@@ -176,18 +176,18 @@ export class CalendarEventService extends GlobalService {
       .pipe(
         // delay(1000),
         map((updatedEvent: CalendarEvent) => {
-          const eventWellFormatted = new CalendarEvent(
-            updatedEvent.title,
-            updatedEvent.startDate,
-            updatedEvent.endDate,
-            updatedEvent.usersEmails,
-            updatedEvent.reminders,
-            updatedEvent.color,
-            updatedEvent.category,
-            updatedEvent.humanStartDate || moment.unix(Number(updatedEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            updatedEvent.humanEndDate || moment.unix(Number(updatedEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            updatedEvent._id
-          );
+          const eventWellFormatted = new CalendarEvent({
+            title: updatedEvent.title,
+            startDate: updatedEvent.startDate,
+            endDate: updatedEvent.endDate,
+            usersEmails: updatedEvent.usersEmails,
+            reminders: updatedEvent.reminders,
+            color: updatedEvent.color,
+            category: updatedEvent.category,
+            humanStartDate: updatedEvent.humanStartDate || moment.unix(Number(updatedEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            humanEndDate: updatedEvent.humanEndDate || moment.unix(Number(updatedEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            _id: updatedEvent._id
+          });
           return eventWellFormatted;
         }),
         catchError(error => this.handleError(error))
@@ -203,19 +203,19 @@ export class CalendarEventService extends GlobalService {
       .pipe(
         // delay(1000),
         map((deletedEvent: CalendarEvent) => {
-          const eventWellFormatted = new CalendarEvent(
-            deletedEvent.title,
-            deletedEvent.startDate,
-            deletedEvent.endDate,
-            deletedEvent.usersEmails,
-            deletedEvent.reminders,
-            deletedEvent.color,
-            deletedEvent.category,
-            deletedEvent.humanStartDate || moment.unix(Number(deletedEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            deletedEvent.humanEndDate || moment.unix(Number(deletedEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            deletedEvent._id,
-            true
-          );
+          const eventWellFormatted = new CalendarEvent({
+            title: deletedEvent.title,
+            startDate: deletedEvent.startDate,
+            endDate: deletedEvent.endDate,
+            usersEmails: deletedEvent.usersEmails,
+            reminders: deletedEvent.reminders,
+            color: deletedEvent.color,
+            category: deletedEvent.category,
+            humanStartDate: deletedEvent.humanStartDate || moment.unix(Number(deletedEvent.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            humanEndDate: deletedEvent.humanEndDate || moment.unix(Number(deletedEvent.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+            _id: deletedEvent._id,
+            _deleted: true
+          });
           return eventWellFormatted;
         }),
         catchError(error => this.handleError(error))

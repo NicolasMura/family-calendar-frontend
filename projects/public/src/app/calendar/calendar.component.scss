@@ -55,7 +55,7 @@ $margin: 15px;
 }
 
 ::ng-deep {
-  .swiper.s-wrapper {
+  .swiper-container {
     height: calc(100% - 40px)!important;
   }
 }
