@@ -26,7 +26,13 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
-## Dockerization
+## Dockerization - Quick start
+
+Fichiers de configuration nécessaires côté serveur :
+
+* frontend/config/family-calendar.nikouz.fr-le-ssl-host-proxy.conf
+* ssl/fullchain.pem
+* ssl/privkey.pem
 
 ```bash
   cd (...)/family-calendar
@@ -35,6 +41,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
   docker run --rm --name family-calendar-frontend \
     -dp 4200:80 \
     family-calendar-frontend
+
   docker logs family-calendar-frontend
   docker tag family-calendar-frontend nicolasmura/family-calendar-frontend
   docker push nicolasmura/family-calendar-frontend
@@ -44,12 +51,26 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
   docker stop family-calendar-frontend
 
   # Running our Image on a New Instance
-  docker run --rm --name family-calendar-frontend -dp 4200:80 nicolasmura/family-calendar-frontend
+  docker run --rm --name family-calendar-frontend \
+    -dp 4200:80 \
+    nicolasmura/family-calendar-frontend
+
+  # Test
+  docker exec -it family-calendar-frontend bash
 
   # Start up the whole application (front + back + mongodb) stack using the docker-compose
-  docker-compose up
-  docker-compose up -d
-  docker-compose up -d --build
+  docker-compose -f docker-compose.yml --env-file ./backend/.env up
+  docker-compose -f docker-compose.yml --env-file ./backend/.env up -d
+  docker-compose -f docker-compose.yml --env-file ./backend/.env up -d --build
+
+  docker-compose -f docker-compose.yml --env-file ./backend/.env up -d --build
+  docker-compose -f docker-compose.prod.yml --env-file ./backend/.env up -d --build
+
+  docker-compose -f docker-compose.yml --env-file ./backend/.env down
+  docker-compose -f docker-compose.prod.yml --env-file ./backend/.env down
+
+  # Test
+  docker exec -it frontend bash
 ```
 
 ## TODO

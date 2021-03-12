@@ -3,6 +3,7 @@
 # compiled output
 /dist
 dist.tar.gz
+dist-public.tar.gz
 /tmp
 /out-tsc
 # Only exists if Bazel was run
@@ -49,3 +50,5 @@ Thumbs.db
 # Misc
 package.json.bkp
 package-lock.json.bkp
+.env
+ssl

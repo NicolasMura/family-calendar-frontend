@@ -1,16 +1,36 @@
 #!/bin/bash
 
-path_ssh_key='/Users/nmura/.ssh/id_rsa_ovh';
-path_dst='/home/nmura/projects/family-calendar';
+source .env;
 
-tar czf dist.tar.gz dist/public/
+# récupération des paramètres
+while getopts ":d" option;
+do
+  # echo "getopts a trouvé l'option $option"
+  case ${option} in
+    d )
+      echo "flag --demo !"
+      demo=1
+      $PATH_DEST=$PATH_DEST_DEMO
+      ;;
+    \?)
+      echo "$OPTARG : option invalide"
+      exit 1
+      ;;
+  esac
+done
 
-scp -i $path_ssh_key dist.tar.gz nmura@family-calendar.nicolasmura.com:$path_dst && echo transfer successful!;
-ssh -i $path_ssh_key nmura@family-calendar.nicolasmura.com bash -c "'
-  cd $path_dst
-  rm -Rf dist
+cd dist
+tar czf ../dist-public.tar.gz public/
+cd ..
+
+scp -i $PATH_SSH_KEY dist-public.tar.gz $USER@$HOSTNAME:$PATH_DEST && echo transfer successful!;
+ssh -i $PATH_SSH_KEY $USER@$HOSTNAME bash -c "'
+  cd $PATH_DEST
+  pwd
+  rm -Rf public
   sleep 1s
   echo Décompression...
-  tar xzf dist.tar.gz
+  tar xzf dist-public.tar.gz
+  # rm dist-public.tar.gz
 '";
 echo done
