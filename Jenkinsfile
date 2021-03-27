@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                echo 'Hello World'
+                echo 'Hello Bob!'
                 // sh 'pwd && npm --version'
             }
         }
