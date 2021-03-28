@@ -1,7 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'node:14-alpine'
+            // image 'node:14-alpine'
+            image 'nicolasmura/family-calendar-frontend-jenkins'
         }
     }
 
