@@ -52,6 +52,15 @@ pipeline {
                     ls -la
                     docker --version
                 '''
+                script {
+                    dockerImage = docker.build "nicolasmura/family-calendar-frontend:$BUILD_NUMBER"
+                    dockerImageLatest = docker.build "nicolasmura/family-calendar-frontend"
+                    // Assume the Docker Hub registry by passing an empty string as the first parameter
+                    docker.withRegistry('' , 'dockerhub') {
+                        dockerImage.push()
+                        dockerImageLatest.push()
+                    }
+                }
             }
         }
     }

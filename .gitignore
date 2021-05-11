@@ -52,3 +52,4 @@ package.json.bkp
 package-lock.json.bkp
 .env
 ssl
+scripts/generate-build-infos.js
