@@ -15,7 +15,7 @@ pipeline {
         stage('SCM Checkout') {
             agent any
             steps {
-                // step([$class: 'WsCleanup'])
+                step([$class: 'WsCleanup'])
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: 'master']],
@@ -42,7 +42,7 @@ pipeline {
                     ls -la
                     node --version
                     yarn --version
-                    #CYPRESS_INSTALL_BINARY=0 yarn && BUILD_ID=${BUILD_ID} yarn generate-build-infos && yarn build:production
+                    CYPRESS_INSTALL_BINARY=0 yarn && BUILD_ID=${BUILD_ID} yarn generate-build-infos && yarn build:production
                 '''
             }
         }
