@@ -51,5 +51,6 @@ Thumbs.db
 package.json.bkp
 package-lock.json.bkp
 .env
-ssl
+ssl/fullchain.pem
+ssl/privkey.pem
 scripts/generate-build-infos.js

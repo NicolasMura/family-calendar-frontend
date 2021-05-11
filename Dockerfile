@@ -4,8 +4,8 @@ FROM httpd:2.4.38
 # Copy custom configuration (Enable SSL + load extra/httpd-vhosts.conf)
 COPY ./config/my-httpd.conf                               /usr/local/apache2/conf/httpd.conf
 COPY ./config/family-calendar.nicolasmura.com-docker.conf /usr/local/apache2/conf/extra/httpd-vhosts.conf
-# COPY ./ssl/fullchain.pem                            /usr/local/apache2/conf/server.crt
-# COPY ./ssl/privkey.pem                              /usr/local/apache2/conf/server.key
+COPY ./ssl/fullchain.pem                            /usr/local/apache2/conf/server.crt
+COPY ./ssl/privkey.pem                              /usr/local/apache2/conf/server.key
 
 # Change directory so that our commands run inside this directory
 WORKDIR /usr/local/apache2/htdocs/family-calendar/frontend

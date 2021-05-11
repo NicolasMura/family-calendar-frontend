@@ -55,6 +55,11 @@ pipeline {
                     ls -la
                     docker --version
                 '''
+                withCredentials([file(credentialsId: 'family-calendar.nicolasmura.com_privkey.pem', variable: 'privkey'),
+                                 file(credentialsId: 'family-calendar.nicolasmura.com_fullchain.pem', variable: 'fullchain')]) {
+                    writeFile file: 'ssl/privkey.pem', text: readFile(privkey)
+                    writeFile file: 'ssl/fullchain.pem', text: readFile(fullchain)
+                }
                 script {
                     DOCKER_IMAGE = docker.build "$DOCKER_IMAGE_NAME:$BUILD_NUMBER"
                     DOCKER_IMAGE_LATEST = docker.build "$DOCKER_IMAGE_NAME"
