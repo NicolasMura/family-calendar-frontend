@@ -13,7 +13,8 @@ const apiPath      = '/v1';
 // const apiPathPublic = '/public' + apiPath;
 
 export const environment = {
-  production: false,
+  production: (window as any)['__env']['production'],
+  bob: (window as any)['__env']['bob'] || 'marley',
   // hmr: true,
   // envName: 'local',
   // appVersion,
@@ -21,13 +22,13 @@ export const environment = {
   // docApiUrl : '/swagger-ui.html',
   // logsApiUrl: '/api/logs',
   // enabledCache: false, // enable cache management (application + localStorage)
-  serviceWorkerScript: 'sw-sync.js',
+  serviceWorkerScript: (window as any)['__env']['serviceWorkerScript'] || 'sw-sync.js',
 
-  wsEndpoint: 'ws://localhost:3000',
+  wsEndpoint: (window as any)['__env']['wsEndpoint'] || 'ws://localhost:3000',
   backendApi: {
-    baseUrlAuth:          'http://localhost:3000/auth',
-    baseUrlUser:          'http://localhost:3000' + apiPath + '/users',
-    baseUrlCalendarEvent: 'http://localhost:3000' + apiPath + '/events',
+    baseUrlAuth:          (window as any)['__env']['backendApi']['baseUrlAuth'] || 'http://localhost:3000/auth',
+    baseUrlUser:          (window as any)['__env']['backendApi']['baseUrlUser'] || 'http://localhost:3000' + apiPath + '/users',
+    baseUrlCalendarEvent: (window as any)['__env']['backendApi']['baseUrlCalendarEvent'] || 'http://localhost:3000' + apiPath + '/events',
   },
 };
 

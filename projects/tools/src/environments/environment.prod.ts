@@ -9,20 +9,21 @@ const apiPath      = '/v1';
 // const apiPathPublic = '/public' + apiPath;
 
 export const environment = {
-  production: true,
-  // hmr: false,
-  // envName: 'prod',
+  production: (window as any)['__env']['production'],
+  bob: (window as any)['__env']['bob'] || 'marley',
+  // hmr: true,
+  // envName: 'local',
   // appVersion,
-  // buildVersion: '0.0.1',
+  // buildVersion: 'dev local',
   // docApiUrl : '/swagger-ui.html',
   // logsApiUrl: '/api/logs',
   // enabledCache: false, // enable cache management (application + localStorage)
-  serviceWorkerScript: 'sw-master.js',
+  serviceWorkerScript: (window as any)['__env']['serviceWorkerScript'] || 'sw-master.js',
 
-  wsEndpoint: 'wss://family-calendar.nicolasmura.com',
+  wsEndpoint: (window as any)['__env']['wsEndpoint'] || 'wss://family-calendar.nicolasmura.com',
   backendApi: {
-    baseUrlAuth:          'https://family-calendar.nicolasmura.com/auth',
-    baseUrlUser:          'https://family-calendar.nicolasmura.com' + apiPath + '/users',
-    baseUrlCalendarEvent: 'https://family-calendar.nicolasmura.com' + apiPath + '/events',
+    baseUrlAuth:          (window as any)['__env']['backendApi']['baseUrlAuth'] || 'https://family-calendar.nicolasmura.com/auth',
+    baseUrlUser:          (window as any)['__env']['backendApi']['baseUrlUser'] || 'https://family-calendar.nicolasmura.com' + apiPath + '/users',
+    baseUrlCalendarEvent: (window as any)['__env']['backendApi']['baseUrlCalendarEvent'] || 'https://family-calendar.nicolasmura.com' + apiPath + '/events',
   },
 };

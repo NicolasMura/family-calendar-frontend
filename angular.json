@@ -24,6 +24,7 @@
             "tsConfig": "projects/public/tsconfig.app.json",
             "aot": true,
             "assets": [
+              "projects/public/src/env.js",
               "projects/public/src/assets",
               "projects/public/src/styles.scss",
               "projects/public/src/manifest.webmanifest",
@@ -130,7 +131,9 @@
             "tsConfig": "projects/public/tsconfig.spec.json",
             "karmaConfig": "projects/public/karma.conf.js",
             "assets": [
+              "projects/public/src/env.js",
               "projects/public/src/assets",
+              "projects/public/src/styles.scss",
               "projects/public/src/manifest.webmanifest",
               "projects/public/src/sw-master.js",
               "projects/public/src/sw-sync.js"
