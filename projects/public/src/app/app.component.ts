@@ -109,10 +109,10 @@ export class AppComponent implements OnInit, AfterViewChecked {
         `%c ❯ Environment: %c${
           environment.production ? 'production 🏭' : 'development 🚧'
         }\n` +
-        `%c ❯ Build Id: ${buildInfo.jenkinsBuildId}\n` +
-        ` ❯ Hash: ${buildInfo.hash}\n` +
-        // ` ❯ User: ${buildInfo.user}\n` +
-        ` ❯ Build Timestamp: ${buildInfo.timestamp}\n`,
+        `%c ❯ Build Id: ${this.buildInfo.jenkinsBuildId}\n` +
+        ` ❯ Hash: ${this.buildInfo.hash}\n` +
+        // ` ❯ User: ${this.buildInfo.user}\n` +
+        ` ❯ Build Timestamp: ${this.buildInfo.timestamp}\n`,
       'font-size: 14px; color: #7c7c7b;',
       'font-size: 12px; color: #7c7c7b',
       environment.production
