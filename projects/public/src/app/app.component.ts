@@ -4,6 +4,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { skip } from 'rxjs/operators';
 import * as moment from 'moment';
+import { environment } from 'projects/tools/src/environments/environment';
 import { CoreConstants } from 'projects/tools/src/lib/core-constants';
 import { AuthService } from 'projects/tools/src/lib/services/auth.service';
 import { UserService } from 'projects/tools/src/lib/services/user.service';
@@ -14,8 +15,20 @@ import { WebSocketService } from 'projects/tools/src/lib/services/websocket.serv
 import { UtilitiesService } from 'projects/tools/src/lib/services/utilities.service';
 import { Observable } from 'rxjs';
 import { User } from 'projects/tools/src/lib/models/user.model';
-// import { buildInfo } from 'projects/public/src/build';
+import { buildInfo } from 'projects/public/src/build';
 // import { fadeInOutAnimation } from 'projects/lib-mycloud/src/lib/shared/animations/animations';
+
+/**
+ * IBuildInfo interface and typings
+ */
+interface IBuildInfo {
+  hash?: string; // Latest commit hash
+  timestamp?: string; // Timestamp on when the build was made
+  user?: string; // Current git user
+  version?: string; // `version` from package.json
+  jenkinsBuildNumber?: string; // `version` from ${BUILD_ID} Jenkins variable
+  message?: string; // Custom build message
+}
 
 
 @Component({
@@ -24,6 +37,11 @@ import { User } from 'projects/tools/src/lib/models/user.model';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewChecked {
+  /**
+   * build infos: hash, timestamp, user and jenkins Build Number
+   * Allow use of buildInfo variable inside template, for display build infos
+   */
+  buildInfo: IBuildInfo;
   /**
    * Observable that gives current user
    */
@@ -44,17 +62,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
    * Current week number
    */
   weekNumber = 0;
-  /**
-   * IBuildInfo interface and typings
-   */
-  // interface IBuildInfo {
-  //   hash?: string; // Latest commit hash
-  //   timestamp?: string; // Timestamp on when the build was made
-  //   user?: string; // Current git user
-  //   version?: string; // `version` from package.json
-  //   jenkinsBuildNumber?: number; // `version` from ${BUILD_ID} Jenkins variable
-  //   message?: string; // Custom build message
-  // }
 
   constructor(
     public router: Router,
@@ -69,7 +76,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     public webSocketService: WebSocketService,
     private utilitiesService: UtilitiesService
   ) {
-    // this.buildInfo = buildInfo;
+    this.buildInfo = buildInfo;
 
     // try to lock screen orientation to portrait mode (not supported in Safari & iOS)
     console.log('try to lock screen orientation to portrait mode');
@@ -94,22 +101,25 @@ export class AppComponent implements OnInit, AfterViewChecked {
     // connect to WebSocket Server
     this.webSocketService.connect();
 
-    // console.log(
-    //   `\n%cBuild Info:\n\n` +
-    //     `%c ❯ Environment: %c${
-    //       environment.production ? "production 🏭" : "development 🚧"
-    //     }\n` +
-    //     `%c ❯ Build Version: ${buildInfo.jenkinsBuildNumber}\n` +
-    //     ` ❯ Hash: ${buildInfo.hash}\n` +
-    //     // ` ❯ User: ${buildInfo.user}\n` +
-    //     ` ❯ Build Timestamp: ${buildInfo.timestamp}\n`,
-    //   "font-size: 14px; color: #7c7c7b;",
-    //   "font-size: 12px; color: #7c7c7b",
-    //   environment.production
-    //     ? "font-size: 12px; color: #95c230;"
-    //     : "font-size: 12px; color: #e26565;",
-    //   "font-size: 12px; color: #7c7c7b"
-    // );
+    console.log('****** environment: *******');
+    console.log(environment);
+    console.log('*************');
+    console.log(
+      `\n%cBuild Info:\n\n` +
+        `%c ❯ Environment: %c${
+          environment.production ? 'production 🏭' : 'development 🚧'
+        }\n` +
+        `%c ❯ Build Version: ${buildInfo.jenkinsBuildNumber}\n` +
+        ` ❯ Hash: ${buildInfo.hash}\n` +
+        // ` ❯ User: ${buildInfo.user}\n` +
+        ` ❯ Build Timestamp: ${buildInfo.timestamp}\n`,
+      'font-size: 14px; color: #7c7c7b;',
+      'font-size: 12px; color: #7c7c7b',
+      environment.production
+        ? 'font-size: 12px; color: #95c230;'
+        : 'font-size: 12px; color: #e26565;',
+      'font-size: 12px; color: #7c7c7b'
+    );
 
     // Service Workers
     this.swUpdate.available.subscribe(event => {

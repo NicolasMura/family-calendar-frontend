@@ -10,12 +10,16 @@ export const WS_ENDPOINT = environment.wsEndpoint;
 const RECONNECT_INTERVAL = 5000;
 
 /**
+ * WebSocket Service
  * https://javascript-conference.com/blog/real-time-in-angular-a-journey-into-websocket-and-rxjs
  */
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService implements OnDestroy {
+  /**
+   * RxJS WebSocket Subject
+   */
   private socket$: WebSocketSubject<WebSocketMessage> = undefined as any;
   /**
    * Private websocket message, as a subject
@@ -26,6 +30,9 @@ export class WebSocketService implements OnDestroy {
    * Expose the observable$ part of the messageSubject subject (read only stream)
    */
   public readonly message$: Observable<CalendarEvent> = this.messageSubject.asObservable();
+  /**
+   * Subject completed when Websocket connection is destroyed
+   */
   destroyed$ = new Subject();
 
   /**
@@ -47,6 +54,9 @@ export class WebSocketService implements OnDestroy {
    */
   public lostConnection = false;
 
+  /**
+   * Connection method to instanciate WebSocket communication
+   */
   public connect(cfg: { reconnect: boolean } = { reconnect: false }): void {
 
     if (!this.socket$ || this.socket$.closed) {
@@ -76,28 +86,14 @@ export class WebSocketService implements OnDestroy {
         })
       )
       .subscribe((msg: WebSocketMessage) => {
-        console.log(msg);
-        if (msg.data && msg.data.type === 'event') {
-          const eventWellFormatted = new CalendarEvent({
-            title: msg.data.content.title,
-            startDate: msg.data.content.startDate,
-            endDate: msg.data.content.endDate,
-            usersEmails: msg.data.content.usersEmails,
-            reminders: msg.data.content.reminders,
-            color: msg.data.content.color,
-            category: msg.data.content.category,
-            humanStartDate: msg.data.content.humanStartDate
-              || moment.unix(Number(msg.data.content.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            humanEndDate: msg.data.content.humanEndDate || moment.unix(Number(msg.data.content.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
-            _id: msg.data.content._id,
-            _deleted: msg.data.content._deleted
-          });
-          this.messageSubject.next(eventWellFormatted);
-        }
+        this.getMessage(msg);
       });
     }
   }
 
+  /**
+   * Create a new WebSocket subject
+   */
   private getNewWebSocket(): WebSocketSubject<WebSocketMessage> {
     console.log('getNewWebSocket() : ', WS_ENDPOINT);
 
@@ -126,14 +122,47 @@ export class WebSocketService implements OnDestroy {
     });
   }
 
-  sendMessage(msg: WebSocketMessage): void {
+  /**
+   * Get and process a message received from the socket
+   */
+   private getMessage(msg: WebSocketMessage): void {
+    console.log(msg);
+    if (msg.data && msg.data.type === 'event') {
+      const eventWellFormatted = new CalendarEvent({
+        title: msg.data.content.title,
+        startDate: msg.data.content.startDate,
+        endDate: msg.data.content.endDate,
+        usersEmails: msg.data.content.usersEmails,
+        reminders: msg.data.content.reminders,
+        color: msg.data.content.color,
+        category: msg.data.content.category,
+        humanStartDate: msg.data.content.humanStartDate
+          || moment.unix(Number(msg.data.content.startDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+        humanEndDate: msg.data.content.humanEndDate || moment.unix(Number(msg.data.content.endDate)).format('YYYY-MM-DDTHH:mm:ssZ'),
+        _id: msg.data.content._id,
+        _deleted: msg.data.content._deleted
+      });
+      this.messageSubject.next(eventWellFormatted);
+    }
+  }
+
+  /**
+   * Send a message to the socket
+   */
+  public sendMessage(msg: WebSocketMessage): void {
     this.socket$.next(msg);
   }
 
+  /**
+   * Closes the connection by completing the subject
+   */
   close(): void {
     this.socket$.complete();
   }
 
+  /**
+   * OnDestroy life cycle
+   */
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
