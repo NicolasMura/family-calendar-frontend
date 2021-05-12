@@ -50,8 +50,9 @@
 /**
  * Get relevant build information
  */
- async function getGitUser(): Promise<string | undefined> {
-  const { stdout, stderr } = await execAsync('git config user.name');
+ async function getGitUser(buildHash: string): Promise<string | undefined> {
+//   const { stdout, stderr } = await execAsync('git config user.name');
+  const { stdout, stderr } = await execAsync('git show ' + buildHash + ' | grep Author');
   if (stderr) {
       signale.error('Error getting git user, skipping...');
       return undefined;
@@ -97,11 +98,18 @@
 
   if (!args.includes('--no-hash')) {
       build.hash = await getCommitHash();
+
+      if (!args.includes('--no-user') && build.hash) {
+        build.user = await getGitUser(build.hash);
+        if (build.user) {
+          build.user = build.user.substring(8);
+        }
+      }
   }
 
-  if (!args.includes('--no-user')) {
-      build.user = await getGitUser();
-  }
+//   if (!args.includes('--no-user')) {
+//       build.user = await getGitUser();
+//   }
 
   if (!args.includes('--no-message')) {
       build.message = await getBuildMessage();
