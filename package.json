@@ -6,7 +6,7 @@
     "start": "ng serve --disable-host-check",
     "start:sw": "ng serve --configuration production --disable-host-check --proxy-config proxy.conf.json --verbose",
     "start:sw-a-tester": "ng serve --configuration production --optimization=false --progress=true --disable-host-check --proxy-config proxy.conf.json --sourceMap=true --live-reload --watch",
-    "generate-build-infos": "node node_modules/typescript/bin/tsc scripts/generate-build-infos.ts && node scripts/generate-build-infos.js --no-version --no-user --no-message --jenkinsBuildId $BUILD_ID",
+    "generate-build-infos": "node node_modules/typescript/bin/tsc scripts/generate-build-infos.ts && node scripts/generate-build-infos.js --no-version --no-message --jenkinsBuildId $BUILD_ID",
     "build": "ng build --configuration production",
     "build:development": "yarn build",
     "build:demo": "ng build --configuration demo --base-href ./",
