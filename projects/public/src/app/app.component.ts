@@ -26,7 +26,7 @@ interface IBuildInfo {
   timestamp?: string; // Timestamp on when the build was made
   user?: string; // Current git user
   version?: string; // `version` from package.json
-  jenkinsBuildId?: string; // `version` from ${BUILD_ID} Jenkins variable
+  jenkinsBuildId?: number; // `version` from ${BUILD_ID} Jenkins variable
   message?: string; // Custom build message
 }
 

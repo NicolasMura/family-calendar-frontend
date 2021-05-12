@@ -2,6 +2,6 @@
 export const buildInfo = {
   hash: '<hash>',
   user: '<user>',
-  jenkinsBuildId: '<BUILD_ID>',
+  jenkinsBuildId: 123,
   timestamp: '<timestamp>'
 };
