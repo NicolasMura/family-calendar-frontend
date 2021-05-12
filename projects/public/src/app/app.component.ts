@@ -26,7 +26,7 @@ interface IBuildInfo {
   timestamp?: string; // Timestamp on when the build was made
   user?: string; // Current git user
   version?: string; // `version` from package.json
-  jenkinsBuildNumber?: string; // `version` from ${BUILD_ID} Jenkins variable
+  jenkinsBuildId?: string; // `version` from ${BUILD_ID} Jenkins variable
   message?: string; // Custom build message
 }
 
@@ -38,7 +38,7 @@ interface IBuildInfo {
 })
 export class AppComponent implements OnInit, AfterViewChecked {
   /**
-   * build infos: hash, timestamp, user and jenkins Build Number
+   * build infos: hash, timestamp, user and jenkins Build Id
    * Allow use of buildInfo variable inside template, for display build infos
    */
   buildInfo: IBuildInfo;
@@ -109,7 +109,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         `%c ❯ Environment: %c${
           environment.production ? 'production 🏭' : 'development 🚧'
         }\n` +
-        `%c ❯ Build Version: ${buildInfo.jenkinsBuildNumber}\n` +
+        `%c ❯ Build Id: ${buildInfo.jenkinsBuildId}\n` +
         ` ❯ Hash: ${buildInfo.hash}\n` +
         // ` ❯ User: ${buildInfo.user}\n` +
         ` ❯ Build Timestamp: ${buildInfo.timestamp}\n`,

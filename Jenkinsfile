@@ -72,7 +72,7 @@ pipeline {
                 }
             }
         }
-        stage('Remove Unused Docker Images') {
+        stage('Clean') {
             agent any
             steps {
                 sh "docker image ls"

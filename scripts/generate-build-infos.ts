@@ -8,7 +8,7 @@
   timestamp?: string; // Timestamp on when the build was made
   user?: string; // Current git user - doesn't work on Jenkins environment
   version?: string; // `version` from package.json - not used because not automatic
-  jenkinsBuildNumber?: string; // Build number from ${BUILD_ID} Jenkins variable
+  jenkinsBuildId?: string; // Build number from ${BUILD_ID} Jenkins variable
   message?: string; // Custom build message
 }
 
@@ -38,7 +38,7 @@
   '--no-version', // Don't show package version in build info
   '--no-time', // Don't show timestamp in build info
   '--no-message', // Don't add build message,
-  '--jenkinsBuildNumber', // ${BUILD_ID} Jenkins Build number,
+  '--jenkinsBuildId', // ${BUILD_ID} Jenkins Build id,
 ];
 
 /**
@@ -111,8 +111,8 @@
       build.version = version;
   }
 
-  if (args.includes('--jenkinsBuildNumber')) {
-      build.jenkinsBuildNumber = argsMinimist.jenkinsBuildNumber;
+  if (args.includes('--jenkinsBuildId')) {
+      build.jenkinsBuildId = argsMinimist.jenkinsBuildId;
   }
 
   if (!args.includes('--no-time')) {
@@ -155,7 +155,7 @@ feel free to check out the main repo over at https://github.com/4dams/angular-bu
       timestamp: moment().format('MMMM DD, YYYY HH:mm:ss'),
       user: 'Octocat',
       version: '1.0.0',
-      jenkinsBuildNumber: '12345'
+      jenkinsBuildId: '12345'
   };
 
   // Try writing file, if it fails, display error message
@@ -189,7 +189,7 @@ to run this script every time before your Angular app is built. An example would
   signale.info('--no-hash               Will not add latest commit hash to final `build.ts`');
   signale.info('--no-user               Will not add git username to final `build.ts`');
   signale.info('--no-version            Will not add version from `package.json` to `build.ts`');
-  signale.info('--jenkinsBuildNumber    Will add Build number from ${BUILD_ID} Jenkins variable to `build.ts`');
+  signale.info('--jenkinsBuildId        Will add Build id from ${BUILD_ID} Jenkins variable to `build.ts`');
   signale.info('--no-time               Will not add timestamp to final `build.ts`');
   signale.info('--no-message            Will not prompt for a build message, leaving it undefined');
  }
