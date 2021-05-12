@@ -8,7 +8,7 @@
   timestamp?: string; // Timestamp on when the build was made
   user?: string; // Current git user - doesn't work on Jenkins environment
   version?: string; // `version` from package.json - not used because not automatic
-  jenkinsBuildId?: string; // Build number from ${BUILD_ID} Jenkins variable
+  jenkinsBuildId?: number; // Build number from ${BUILD_ID} Jenkins variable
   message?: string; // Custom build message
 }
 
@@ -155,7 +155,7 @@ feel free to check out the main repo over at https://github.com/4dams/angular-bu
       timestamp: moment().format('MMMM DD, YYYY HH:mm:ss'),
       user: 'Octocat',
       version: '1.0.0',
-      jenkinsBuildId: '12345'
+      jenkinsBuildId: 12345
   };
 
   // Try writing file, if it fails, display error message
